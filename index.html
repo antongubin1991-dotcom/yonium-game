@@ -28,21 +28,35 @@
         <img id="castleImage" src="assets/castle.png" alt="castle">
     </div>
 
-    <!-- ============ RIGHT: STATISTICS ============ -->
-    <div class="panel" id="statsPanel">
-        <h3>Статистика</h3>
-        <table>
-            <tr><td>Жители:</td><td id="pop"></td></tr>
-            <tr><td>Еда:</td><td id="food"></td></tr>
-            <tr><td>Золото:</td><td id="gold"></td></tr>
-            <tr><td>Железо:</td><td id="iron"></td></tr>
-            <tr><td>Оружие:</td><td id="weapons"></td></tr>
-            <tr><td>Солдаты:</td><td id="army"></td></tr>
-            <tr><td>Популярность:</td><td id="popularity"></td></tr>
-            <tr><td>Замок:</td><td id="castle"></td></tr>
-            <tr><td>Титул:</td><td id="rank"></td></tr>
-        </table>
+    <!-- СТАТИСТИКА -->
+<div class="stats panel">
+    <h3>Статистика</h3>
+    <div class="statRow"><span>Жители:</span><span id="pop"></span></div>
+    <div class="statRow"><span>Еда:</span><span id="food"></span></div>
+    <div class="statRow"><span>Золото:</span><span id="gold"></span></div>
+    <div class="statRow"><span>Железо:</span><span id="iron"></span></div>
+    <div class="statRow"><span>Оружие:</span><span id="weapons"></span></div>
+    <div class="statRow"><span>Солдаты:</span><span id="army"></span></div>
+    <div class="statRow"><span>Популярность:</span><span id="popularity"></span></div>
+    <div class="statRow"><span>Замок:</span><span id="castle"></span></div>
+    <div class="statRow"><span>Титул:</span><span id="rank"></span></div>
+</div>
+
+<!-- НАЛОГИ И ПАЙКИ — отдельная панель -->
+<div class="panel">
+    <h3>Налоги и пайки</h3>
+
+    <div class="inputRow">
+        <label>Налоги (%):</label>
+        <input id="taxRate" type="number" min="0" max="100" value="30">
     </div>
+
+    <div class="inputRow">
+        <label>Еда на человека:</label>
+        <input id="foodRate" type="number" min="0" max="10" value="3">
+    </div>
+</div>
+
 
     <!-- ============ BOTTOM LEFT: BUILDING ============ -->
     <div class="panel" id="buildPanel">
@@ -135,3 +149,4 @@
 
 </body>
 </html>
+
