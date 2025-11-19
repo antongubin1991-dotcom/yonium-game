@@ -98,7 +98,19 @@ function updateUI() {
     updateAdvisor();
     renderMap();
 }
+/* ============================================================
+   СИНХРОНИЗАЦИЯ ИНПУТОВ (налоги / пайки)
+============================================================ */
 
+document.getElementById("taxRate").addEventListener("input", () => {
+    const v = Number(document.getElementById("taxRate").value);
+    state.taxRate = Math.min(100, Math.max(0, v));
+});
+
+document.getElementById("foodRate").addEventListener("input", () => {
+    const v = Number(document.getElementById("foodRate").value);
+    state.foodRate = Math.min(10, Math.max(0, v));
+});
 
 /* ============================================================
    РАНГИ
@@ -331,3 +343,4 @@ loadGame();
 initMap();
 updateUI();
 renderMap();
+
