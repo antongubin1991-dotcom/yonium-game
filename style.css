@@ -1,238 +1,334 @@
 @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
 
-/* --------------------------------------------- */
-/* GLOBAL LAYOUT                                 */
-/* --------------------------------------------- */
+/* ============================================= */
+/* GLOBAL                                         */
+/* ============================================= */
 
-body {
+html, body {
     margin: 0;
     padding: 0;
+    height: 100%;
+    overflow: hidden; /* <── ВАЖНО: интерфейс всегда помещается на экран */
+    color: #e1e1e1;
     font-family: Arial, sans-serif;
-    color: #eee;
-    overflow: hidden;
-
-    background: #0a0a0c url('background.jpg') center/cover fixed;
 }
 
-h1, h2, h3 {
-    font-family: 'Uncial Antiqua', serif;
-    margin: 0;
-    text-shadow: 0 0 8px #000;
+/* Background with parallax + vignette */
+body {
+    background: #0a0a0c url('background.jpg') center/cover no-repeat fixed;
+    animation: parallaxMove 60s linear infinite;
 }
 
-/* --------------------------------------------- */
-/* TOP BAR                                       */
-/* --------------------------------------------- */
+@keyframes parallaxMove {
+    0%   { background-position: 50% 50%; }
+    50%  { background-position: 47% 52%; }
+    100% { background-position: 50% 50%; }
+}
+
+/* vignette */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+
+    background: radial-gradient(
+        circle at center,
+        rgba(0,0,0,0.0) 0%,
+        rgba(0,0,0,0.25) 40%,
+        rgba(0,0,0,0.5) 75%,
+        rgba(0,0,0,0.75) 100%
+    );
+}
+
+
+/* ============================================= */
+/* TOP BAR                                        */
+/* ============================================= */
 
 #topBar {
     text-align: center;
-    padding: 12px;
-    background: rgba(0,0,0,0.6);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 0 5px;
+    background: rgba(0,0,0,0.55);
+    border-bottom: 2px solid #333;
+    position: relative;
+    z-index: 5;
 }
 
-#topBar h1 {
-    font-size: 40px;
-    color: #d7c69a;
+h1 {
+    margin: 0;
+    font-family: 'Uncial Antiqua', serif;
+    font-size: 36px;
+    color: #d6c7a3;
+    text-shadow: 0 0 8px rgba(150,120,60,0.4);
 }
 
-#topBar h2 {
-    margin-top: 5px;
-    color: #f0f0f0;
+#yearLabel {
+    margin: 0;
+    font-size: 20px;
 }
 
-/* --------------------------------------------- */
-/* MAIN GRID LAYOUT                              */
-/* --------------------------------------------- */
 
-#layout {
+/* ============================================= */
+/* MAIN GRID (3-column layout)                    */
+/* ============================================= */
+
+#mainGrid {
+    position: absolute;
+    top: 90px;
+    left: 0;
+    right: 0;
+    bottom: 90px;  /* место под кнопку года */
     display: grid;
-    grid-template-columns: 300px 1fr 350px;
-    height: calc(100vh - 110px);
-    gap: 10px;
-    padding: 10px;
-    box-sizing: border-box;
+
+    grid-template-columns: 350px auto 350px;
+    gap: 20px;
+
+    padding: 0 20px;
+    z-index: 3;
 }
 
-/* --------------------------------------------- */
-/* PANELS                                        */
-/* --------------------------------------------- */
+
+/* ============================================= */
+/* PANELS                                         */
+/* ============================================= */
 
 .panel {
-    background: rgba(15, 15, 20, 0.55);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    padding: 10px;
+    height: 100%;
     overflow: hidden;
+
+    background: rgba(15, 15, 20, 0.55);
+    border-radius: 12px;
+    padding: 15px;
+
+    border: 1px solid rgba(255,255,255,0.07);
+
+    backdrop-filter: blur(8px) brightness(0.95);
+    -webkit-backdrop-filter: blur(8px) brightness(0.95);
+
+    box-shadow:
+        0 0 25px rgba(0,0,0,0.7),
+        inset 0 0 15px rgba(0,0,0,0.4);
 }
 
 .panel h3 {
-    color: #e6d3a0;
-    margin-bottom: 10px;
+    margin-top: 0;
+    font-family: 'Uncial Antiqua', serif;
+    color: #e0cf9c;
+    text-shadow: 0 0 5px rgba(120, 95, 50, 0.4);
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 12px 0;
+}
+
+
+/* ============================================= */
+/* MINI MAP                                       */
+/* ============================================= */
+
+#miniMapPanel h3 {
     text-align: center;
 }
 
-/* --------------------------------------------- */
-/* MINI MAP                                      */
-/* --------------------------------------------- */
-
 #mapGrid {
-    width: 100%;
-    height: calc(100% - 30px);
+    margin: 10px auto 0;
+    width: 300px;
+    height: 300px;
+
     display: grid;
-    grid-template-columns: repeat(15, 1fr);
-    grid-template-rows: repeat(15, 1fr);
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+
     gap: 2px;
+    padding: 4px;
+
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
 }
 
 .mapCell {
-    background: #1f1f1f;
+    background: rgba(30,30,35,0.55);
     border-radius: 2px;
 }
 
-/* TERRAIN STYLES */
+/* terrain */
 .terrain-grass {
     background: linear-gradient(#3d3f3d, #2b2d2b);
 }
-
 .terrain-forest {
     background: linear-gradient(#2e332e, #1f221f);
     box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
 }
-
 .terrain-water {
     background: radial-gradient(circle, #1e3c55, #0c1823);
-    box-shadow: inset 0 0 10px rgba(0,60,120,0.5);
 }
-
 .terrain-road {
     background: linear-gradient(#5a4a30, #3b301e);
 }
 
-/* BUILDING ICONS */
+/* icons */
 .mapIcon {
-    width: 90%;
-    height: 90%;
-    margin: auto;
+    width: 95%;
+    height: 95%;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
+    animation: mapPop 0.2s ease-out;
 }
 
-/* Popup icons */
-.icon-farm { background-image: url('assets/icons/icon_farm.png'); }
-.icon-mine { background-image: url('assets/icons/icon_mine.png'); }
-.icon-market { background-image: url('assets/icons/icon_market.png'); }
-.icon-forge { background-image: url('assets/icons/icon_forge.png'); }
-.icon-castle { background-image: url('assets/icons/icon_castle.png'); }
+@keyframes mapPop {
+    0%   { transform: scale(0.3); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
 
-/* --------------------------------------------- */
-/* BUTTONS                                       */
-/* --------------------------------------------- */
+
+/* ============================================= */
+/* BUTTONS                                        */
+/* ============================================= */
 
 button {
     width: 100%;
+    margin: 6px 0;
+    padding: 10px 12px;
+
+    background: linear-gradient(145deg, #2a2a30, #1a1a1e);
+    color: #e7d7a7;
+    font-family: 'Uncial Antiqua', serif;
+
+    border: 1px solid rgba(130,110,70,0.6);
+    border-radius: 8px;
+
+    box-shadow:
+        0 0 6px rgba(0,0,0,0.8),
+        inset 0 0 6px rgba(200,170,80,0.15);
+
+    transition: 0.2s;
+    cursor: pointer;
+
     display: flex;
     align-items: center;
     gap: 10px;
-
-    padding: 10px;
-    margin: 5px 0;
-
-    background: linear-gradient(145deg, #2d2d33, #1a1a1e);
-    color: #e7d7a7;
-    border: 1px solid rgba(130,110,70,0.6);
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'Uncial Antiqua', serif;
 }
 
 button img {
     width: 22px;
     height: 22px;
+    filter: drop-shadow(0 0 3px black);
 }
 
 button:hover {
-    background: linear-gradient(145deg, #393942, #212126);
-    box-shadow: 0 0 10px rgba(200,170,80,0.3);
+    background: linear-gradient(145deg, #3a3a44, #212126);
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 10px rgba(200,170,80,0.3),
+        0 0 15px rgba(0,0,0,0.8);
 }
 
-/* --------------------------------------------- */
-/* STATS BLOCK                                   */
-/* --------------------------------------------- */
+
+/* ============================================= */
+/* STATISTICS PANEL                               */
+/* ============================================= */
 
 .statRow {
     display: flex;
     justify-content: space-between;
-    margin: 4px 0;
-    font-size: 15px;
+    margin: 6px 0;
 }
 
 .inputRow {
-    margin: 5px 0;
     display: flex;
     justify-content: space-between;
+    margin: 8px 0;
 }
 
-.inputRow input {
-    width: 60px;
+input {
+    width: 80px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background: rgba(0,0,0,0.4);
+    color: #fff;
 }
 
-/* --------------------------------------------- */
-/* YEAR BUTTON                                   */
-/* --------------------------------------------- */
+
+/* ============================================= */
+/* NEXT YEAR BUTTON                               */
+/* ============================================= */
 
 #yearButtonWrap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 20px;
     text-align: center;
-    padding: 10px;
+    z-index: 5;
 }
 
 #endTurnButton {
-    width: 250px;
-    background: linear-gradient(145deg, #504031, #2e261a);
-    color: #fff;
-    border: 1px solid #b89754;
+    width: 260px;
+    font-size: 20px;
 }
 
-#endTurnButton:hover {
-    background: linear-gradient(145deg, #7b623f, #4a3b26);
+
+/* ============================================= */
+/* ADVISOR PANEL (FLOATING)                       */
+/* ============================================= */
+
+#advisorPanel {
+    position: absolute;
+    right: 20px;
+    bottom: 90px;
+    width: 300px;
+    height: 220px;
+
+    background: rgba(10, 10, 14, 0.55);
+    border-radius: 12px;
 }
 
-/* --------------------------------------------- */
-/* POPUP WINDOWS                                 */
-/* --------------------------------------------- */
+#advisor {
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+
+/* ============================================= */
+/* POPUPS                                         */
+/* ============================================= */
 
 .popup {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.75);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
+    backdrop-filter: blur(5px);
+    z-index: 20;
 }
 
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 .popupBox {
-    background: rgba(30,30,35,0.95);
+    background: rgba(25,25,30,0.9);
     padding: 20px;
-    border-radius: 10px;
     width: 350px;
-    border: 1px solid #555;
-    box-shadow: 0 0 20px #000;
-    text-align: center;
+    margin: 120px auto;
+    border-radius: 12px;
+
+    border: 2px solid rgba(255,255,255,0.15);
+    box-shadow:
+        0 0 20px #000,
+        inset 0 0 10px rgba(0,0,0,0.6);
 }
 
 .buildIcon {
-    width: 100px;
-    height: 100px;
-    margin: 10px auto;
+    width: 60px;
+    height: 60px;
+    display: block;
+    margin: 15px auto;
 }
-
-/* --------------------------------------------- */
-/* END OF FILE                                    */
-/* --------------------------------------------- */
