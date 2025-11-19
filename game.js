@@ -219,11 +219,12 @@ function upgradeCastle() {
     state.gold -= cost;
     state.castle++;
 
-    document.getElementById("castleImage").src = "assets/castle" + state.castle + ".png";
-    document.getElementById("castleImage").classList.add("castle-upgrade");
+    // Если у тебя одна картинка, просто пульсуем яркость
+    const castleImg = document.getElementById("castleImage");
+    castleImg.classList.add("castle-upgrade");
 
     setTimeout(() => {
-        document.getElementById("castleImage").classList.remove("castle-upgrade");
+        castleImg.classList.remove("castle-upgrade");
     }, 1000);
 
     updateUI();
@@ -391,3 +392,4 @@ function closeReport() {
 
 generateMap();
 updateUI();
+
