@@ -142,6 +142,12 @@ function upgradeCastle() {
     }
 
     saveGame();
+    const castle = document.getElementById("castleImage");
+castle.classList.add("castle-upgrade");
+
+setTimeout(() => {
+    castle.classList.remove("castle-upgrade");
+}, 1200);
     updateUI();
 }
 
@@ -462,3 +468,4 @@ function checkRank() {
 //                 СТАРТ
 // ======================================================
 updateUI();
+
