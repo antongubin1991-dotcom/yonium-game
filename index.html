@@ -2,23 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Империя Тьмы — Экономическая Стратегия</title>
+    <title>Йониум — Возвращение Императора</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- ==== ВЕРХНИЙ БАР ==== -->
+<!-- ====================== HEADER ====================== -->
 <div id="topBar">
-    <h1>Империя Тьмы</h1>
-    <h2 id="yearLabel">Год: 1450</h2>
+    <h1>Йониум — Империя Тьмы</h1>
+    <div id="yearLabel">Год: 1450</div>
 </div>
 
+<!-- ====================== MAIN GRID LAYOUT ====================== -->
+<div id="mainWrapper">
 
-<!-- ==== ОСНОВНАЯ СЕТКА ==== -->
-<div id="mainContainer">
+    <!-- ============ LEFT: MINI MAP ============ -->
+    <div id="miniMap" class="panel">
+        <h3>Поселение</h3>
+        <div id="mapGrid"></div>
+    </div>
 
-    <!-- ==== ЛЕВАЯ ПАНЕЛЬ: СТАТИСТИКА ==== -->
-    <div class="panel">
+    <!-- ============ TOP CENTER: CASTLE ============ -->
+    <div id="castleView">
+        <img id="castleImage" src="assets/castle.png" alt="castle">
+    </div>
+
+    <!-- ============ RIGHT: STATISTICS ============ -->
+    <div class="panel" id="statsPanel">
         <h3>Статистика</h3>
         <table>
             <tr><td>Жители:</td><td id="pop"></td></tr>
@@ -33,68 +44,52 @@
         </table>
     </div>
 
-
-    <!-- ==== МИНИКАРТА ==== -->
-    <div id="miniMap" class="panel">
-        <h3>Карта поселения</h3>
-        <div id="mapGrid"></div>
-    </div>
-
-
-    <!-- ==== ПРАВАЯ ПАНЕЛЬ: СТРОИТЕЛЬСТВО ==== -->
-    <div class="panel">
+    <!-- ============ BOTTOM LEFT: BUILDING ============ -->
+    <div class="panel" id="buildPanel">
         <h3>Строительство</h3>
 
-        <div class="buildIcon" onclick="openBuildPopup('farm')">
-            <img src="assets/icons/icon_farm.png" />
-            <span>Ферма</span>
-        </div>
+        <button onclick="openBuildPopup('farm')">
+            <img src="assets/icons/icon_farm.png">
+            Построить ферму
+        </button>
 
-        <div class="buildIcon" onclick="openBuildPopup('mine')">
-            <img src="assets/icons/icon_mine.png" />
-            <span>Шахта</span>
-        </div>
+        <button onclick="openBuildPopup('mine')">
+            <img src="assets/icons/icon_mine.png">
+            Построить шахту
+        </button>
 
-        <div class="buildIcon" onclick="openBuildPopup('market')">
-            <img src="assets/icons/icon_market.png" />
-            <span>Рынок</span>
-        </div>
+        <button onclick="openBuildPopup('market')">
+            <img src="assets/icons/icon_market.png">
+            Построить рынок
+        </button>
 
-        <div class="buildIcon" onclick="openBuildPopup('forge')">
-            <img src="assets/icons/icon_forge.png" />
-            <span>Кузница</span>
-        </div>
+        <button onclick="openBuildPopup('forge')">
+            <img src="assets/icons/icon_forge.png">
+            Построить кузницу
+        </button>
 
-        <div class="buildIcon" onclick="upgradeCastle()">
-            <img src="assets/icons/icon_castle.png" />
-            <span>Строить замок</span>
-        </div>
+        <button onclick="upgradeCastle()">
+            <img src="assets/icons/icon_castle.png">
+            Улучшить замок
+        </button>
     </div>
 
+    <!-- ============ BOTTOM CENTER: NEXT YEAR BUTTON ============ -->
+    <button id="yearBtn" onclick="endTurn()">Следующий год</button>
 
-    <!-- ==== АРМИЯ ==== -->
-    <div class="panel">
-        <h3>Армия</h3>
-        <button onclick="craftWeapon()">Ковать оружие</button>
-        <button onclick="hireSoldier()">Нанять солдата</button>
-    </div>
+    <!-- ============ BOTTOM RIGHT: TAXES & TRADE ============ -->
+    <div class="panel" id="controlsPanel">
+        <h3>Налоги и пайки</h3>
 
+        <label>Налоги (%):
+            <input id="taxRate" type="number" min="0" max="100" value="30">
+        </label><br><br>
 
-    <!-- ==== НАЛОГИ ==== -->
-    <div class="panel">
-        <h3>Налоги и пища</h3>
+        <label>Еда на человека:
+            <input id="foodRate" type="number" min="0" max="10" value="3">
+        </label>
 
-        <label>Налоги (%):</label><br>
-        <input id="taxRate" type="number" min="0" max="100" value="30"><br><br>
-
-        <label>Еда на человека:</label><br>
-        <input id="foodRate" type="number" min="0" max="10" value="3">
-    </div>
-
-
-    <!-- ==== ТОРГОВЛЯ ==== -->
-    <div class="panel">
-        <h3>Торговля</h3>
+        <h3 style="margin-top:15px;">Торговля</h3>
         <button onclick="sellFood()">Продать еду</button>
         <button onclick="buyFood()">Купить еду</button>
         <button onclick="sellIron()">Продать железо</button>
@@ -103,43 +98,31 @@
         <button onclick="buyWeapons()">Купить оружие</button>
     </div>
 
-
-    <!-- ==== СОВЕТНИК ==== -->
-    <div class="panel">
-        <h3>Советник</h3>
-        <pre id="advisor"></pre>
-    </div>
-
-
-    <!-- ==== СЛЕДУЮЩИЙ ГОД ==== -->
-    <button class="nextYear" onclick="endTurn()">Следующий год ▶</button>
-
 </div>
 
+<!-- ====================== ADVISOR PANEL ====================== -->
+<div class="panel" id="advisorPanel" style="position:fixed; right:10px; bottom:10px; width:260px;">
+    <h3>Советник</h3>
+    <pre id="advisor"></pre>
+</div>
 
-<!-- ==== POPUP СТРОИТЕЛЬСТВА ==== -->
-<div id="buildPopup" class="hidden popup">
-    <div class="popupBox">
-        <img id="popupIcon">
-        <h3 id="popupTitle"></h3>
-        <p id="popupDesc"></p>
-        <p id="popupCost"></p>
+<!-- ====================== POPUP: BUILDING ====================== -->
+<div id="popupOverlay">
+    <div id="popupBox">
+        <div id="popupTitle"></div>
+        <div class="popup-desc" id="popupDesc"></div>
 
-        <label>Количество:</label>
-        <select id="popupAmount">
-            <option value="1">1</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-        </select>
+        <div class="popup-buttons">
+            <button onclick="confirmBuild(1)">Построить 1</button>
+            <button onclick="confirmBuild(5)">Построить 5</button>
+            <button onclick="confirmBuild(10)">Построить 10</button>
 
-        <button onclick="confirmBuild()">Построить</button>
-        <button onclick="closeBuildPopup()">Закрыть</button>
+            <button style="margin-top:15px;" onclick="closePopup()">Отмена</button>
+        </div>
     </div>
 </div>
 
-
-<!-- ==== popup отчёта ==== -->
+<!-- ====================== REPORT POPUP ====================== -->
 <div id="reportPanel" class="hidden">
     <div id="reportBox">
         <h3>Отчёт за год</h3>
@@ -148,8 +131,7 @@
     </div>
 </div>
 
-
 <script src="game.js"></script>
+
 </body>
 </html>
-
