@@ -1,96 +1,239 @@
 @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
 
+/* ============================================= */
+/*                ГЛОБАЛЬНЫЕ НАСТРОЙКИ           */
+/* ============================================= */
+
 body {
     margin: 0;
-    background: #0c0c0f url('background.jpg') top center no-repeat;
-    background-size: contain;
-    background-attachment: fixed;
+    padding: 0;
     color: #e1e1e1;
     font-family: Arial, sans-serif;
+    overflow-x: hidden;
+
+    /* ФОН ИГРЫ */
+    background: #0a0a0c url('background.jpg') center/cover no-repeat fixed;
+
+    /* ПАРАЛЛАКС */
+    animation: parallaxMove 60s linear infinite;
 }
 
-/* Центрируем верхний бар */
+/* МЕДЛЕННОЕ ДВИЖЕНИЕ ФОНА */
+@keyframes parallaxMove {
+    0%   { background-position: 50% 50%; }
+    50%  { background-position: 47% 52%; }
+    100% { background-position: 50% 50%; }
+}
+
+/* ТЁМНАЯ ВИНЬЕТКА ПО КРАЯМ */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+
+    background: radial-gradient(
+        circle at center,
+        rgba(0,0,0,0.0) 0%,
+        rgba(0,0,0,0.2) 45%,
+        rgba(0,0,0,0.45) 75%,
+        rgba(0,0,0,0.70) 100%
+    );
+}
+
+
+/* ============================================= */
+/*                     ВЕРХНИЙ БАР                */
+/* ============================================= */
+
 #topBar {
     text-align: center;
     padding: 15px;
     background: rgba(0,0,0,0.55);
     border-bottom: 2px solid #333;
+    position: relative;
+    z-index: 5;
 }
 
-/* Заголовок компактный */
 h1 {
     margin: 0;
     font-family: 'Uncial Antiqua', serif;
     font-size: 38px;
+    letter-spacing: 2px;
     color: #d6c7a3;
+    text-shadow: 0 0 8px rgba(150,120,60,0.4);
 }
-h2 { margin: 5px 0; }
 
-/* Замок маленький и компактный */
+h2 {
+    margin: 5px 0;
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
+}
+
+
+/* ============================================= */
+/*                   ЗАМКОВАЯ ЗОНА                */
+/* ============================================= */
+
 #castleView {
     text-align: center;
     margin: 10px auto;
-}
-#castleView img {
-    width: 300px;
-    max-width: 90%;
-    filter: drop-shadow(0 0 10px #000);
+    position: relative;
+    z-index: 5;
 }
 
-/* ОСНОВНОЙ КОНТЕЙНЕР — ЦЕНТР */
+#castleView img {
+    width: 280px;
+    max-width: 90%;
+    filter: drop-shadow(0 0 25px rgba(0,0,0,0.9))
+            brightness(0.85)
+            contrast(1.15);
+}
+
+
+/* ============================================= */
+/*                ОСНОВНОЙ КОНТЕЙНЕР              */
+/* ============================================= */
+
 #mainContainer {
     width: 95%;
     max-width: 1200px;
     margin: 0 auto;
+
     display: grid;
     grid-template-columns: repeat(2, minmax(300px, 1fr));
     grid-gap: 20px;
     margin-top: 20px;
+
+    position: relative;
+    z-index: 5;
 }
 
-/* Панели */
+
+/* ============================================= */
+/*                      ПАНЕЛИ                    */
+/* ============================================= */
+
 .panel {
-    background: linear-gradient(135deg, #1d1d23, #111115);
-    border: 2px solid #3a3a45;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: inset 0 0 12px #000, 0 0 10px #000;
+    position: relative;
+    padding: 15px 16px;
+    border-radius: 12px;
+
+    border: 1px solid rgba(255,255,255,0.07);
+
+    background: rgba(15, 15, 20, 0.45);
+    backdrop-filter: blur(8px) brightness(0.9);
+    -webkit-backdrop-filter: blur(8px) brightness(0.9);
+
+    box-shadow:
+        0 0 25px rgba(0,0,0,0.7),
+        inset 0 0 15px rgba(0,0,0,0.5),
+        0 0 8px rgba(160,130,80,0.2);
 }
+
+.panel h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-family: 'Uncial Antiqua', serif;
+    color: #e0cf9c;
+    text-shadow: 0 0 6px rgba(120, 95, 50, 0.4);
+}
+
+
+/* ============================================= */
+/*                    КНОПКИ                      */
+/* ============================================= */
 
 button {
+    position: relative;
     width: 100%;
     margin: 6px 0;
-    padding: 8px;
+    padding: 10px 12px;
+
+    background: linear-gradient(145deg, #2a2a30, #1a1a1e);
+    color: #e7d7a7;
     font-weight: bold;
-    border-radius: 6px;
-    border: 1px solid #444;
-    background: #26262d;
-    color: #e2e2e2;
+    font-family: 'Uncial Antiqua', serif;
+    letter-spacing: 1px;
+
+    border: 1px solid rgba(130,110,70,0.6);
+    border-radius: 8px;
+
+    box-shadow:
+        0 0 6px rgba(0,0,0,0.8),
+        inset 0 0 6px rgba(200,170,80,0.15);
+
+    transition: 0.2s;
     cursor: pointer;
-    transition: 0.15s;
-}
-button:hover {
-    background: #35353f;
-    transform: translateY(-2px);
 }
 
-/* Отчёт */
+button:hover {
+    background: linear-gradient(145deg, #3a3a44, #212126);
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 10px rgba(200,170,80,0.3),
+        0 0 15px rgba(0,0,0,0.8);
+}
+
+
+/* ============================================= */
+/*                   ОТЧЁТ ЗА ГОД                 */
+/* ============================================= */
+
 #reportPanel {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(5px);
+    z-index: 20;
 }
+
+.hidden {
+    display: none;
+}
+
 #reportBox {
     width: 600px;
     max-width: 90%;
     margin: 80px auto;
-    background: #1b1b1f;
+    background: rgba(25,25,30,0.85);
     padding: 20px;
-    border: 2px solid #555;
     border-radius: 12px;
-    box-shadow: 0 0 20px #000;
+
+    border: 2px solid #555;
+    box-shadow: 0 0 20px #000, inset 0 0 12px rgba(0,0,0,0.6);
 }
 
-/* Скрытие */
-.hidden { display: none; }
+#reportText {
+    white-space: pre-wrap;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #e0e0e0;
+}
 
+
+/* ============================================= */
+/*               ДЕКОРАТИВНЫЕ ЭФФЕКТЫ             */
+/* ============================================= */
+
+/* Тень под текстом */
+h1, h2, h3 {
+    text-shadow: 0 0 8px rgba(0,0,0,0.9);
+}
+
+/* Магическое послевкусие */
+.panel::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+
+    background: radial-gradient(
+        circle at top center,
+        rgba(200,170,100,0.15),
+        rgba(0,0,0,0)
+    );
+
+    pointer-events: none;
+    z-index: -1;
+}
