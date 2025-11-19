@@ -2,7 +2,7 @@
 
 body {
     margin: 0;
-    background: #0c0c0f url('https://i.imgur.com/y0w7xTD.jpeg') top center no-repeat;
+    background: #0c0c0f url('background.jpg') top center no-repeat;
     background-size: contain;
     background-attachment: fixed;
     color: #e1e1e1;
@@ -93,3 +93,4 @@ button:hover {
 
 /* Скрытие */
 .hidden { display: none; }
+
