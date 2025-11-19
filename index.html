@@ -2,141 +2,115 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Йониум — Возвращение Императора</title>
+    <title>Йониум — Империя Тьмы</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<!-- ====================== HEADER ====================== -->
+<!-- ======= ВЕРХНИЙ БАР ======= -->
 <div id="topBar">
     <h1>Йониум — Империя Тьмы</h1>
-    <div id="yearLabel">Год: 1450</div>
+    <h2 id="yearLabel">Год: 1450</h2>
 </div>
 
-<!-- ====================== MAIN GRID LAYOUT ====================== -->
-<div id="mainWrapper">
+<div id="layout">
 
-    <!-- ============ LEFT: MINI MAP ============ -->
-    <div id="miniMap" class="panel">
+    <!-- ======= МИНИ-КАРТА ======= -->
+    <div id="leftPanel" class="panel">
         <h3>Поселение</h3>
         <div id="mapGrid"></div>
     </div>
 
-    <!-- ============ TOP CENTER: CASTLE ============ -->
-    <div id="castleView">
-        <img id="castleImage" src="assets/castle.png" alt="castle">
-    </div>
-
-    <!-- СТАТИСТИКА -->
-<div class="stats panel">
-    <h3>Статистика</h3>
-    <div class="statRow"><span>Жители:</span><span id="pop"></span></div>
-    <div class="statRow"><span>Еда:</span><span id="food"></span></div>
-    <div class="statRow"><span>Золото:</span><span id="gold"></span></div>
-    <div class="statRow"><span>Железо:</span><span id="iron"></span></div>
-    <div class="statRow"><span>Оружие:</span><span id="weapons"></span></div>
-    <div class="statRow"><span>Солдаты:</span><span id="army"></span></div>
-    <div class="statRow"><span>Популярность:</span><span id="popularity"></span></div>
-    <div class="statRow"><span>Замок:</span><span id="castle"></span></div>
-    <div class="statRow"><span>Титул:</span><span id="rank"></span></div>
-</div>
-
-<!-- НАЛОГИ И ПАЙКИ — отдельная панель -->
-<div class="panel">
-    <h3>Налоги и пайки</h3>
-
-    <div class="inputRow">
-        <label>Налоги (%):</label>
-        <input id="taxRate" type="number" min="0" max="100" value="30">
-    </div>
-
-    <div class="inputRow">
-        <label>Еда на человека:</label>
-        <input id="foodRate" type="number" min="0" max="10" value="3">
-    </div>
-</div>
-
-
-    <!-- ============ BOTTOM LEFT: BUILDING ============ -->
-    <div class="panel" id="buildPanel">
+    <!-- ======= СТРОИТЕЛЬСТВО ======= -->
+    <div id="centerPanel" class="panel">
         <h3>Строительство</h3>
 
         <button onclick="openBuildPopup('farm')">
-            <img src="assets/icons/icon_farm.png">
-            Построить ферму
+            <img src="assets/icons/icon_farm.png"> Построить ферму
         </button>
 
         <button onclick="openBuildPopup('mine')">
-            <img src="assets/icons/icon_mine.png">
-            Построить шахту
+            <img src="assets/icons/icon_mine.png"> Построить шахту
         </button>
 
         <button onclick="openBuildPopup('market')">
-            <img src="assets/icons/icon_market.png">
-            Построить рынок
+            <img src="assets/icons/icon_market.png"> Построить рынок
         </button>
 
         <button onclick="openBuildPopup('forge')">
-            <img src="assets/icons/icon_forge.png">
-            Построить кузницу
+            <img src="assets/icons/icon_forge.png"> Построить кузницу
         </button>
 
         <button onclick="upgradeCastle()">
-            <img src="assets/icons/icon_castle.png">
-            Улучшить замок
+            <img src="assets/icons/icon_castle.png"> Улучшить замок
         </button>
     </div>
 
-    <!-- ============ BOTTOM CENTER: NEXT YEAR BUTTON ============ -->
-    <button id="yearBtn" onclick="endTurn()">Следующий год</button>
+    <!-- ======= СТАТИСТИКА ======= -->
+    <div id="rightPanel" class="panel">
+        <h3>Статистика</h3>
 
-    <!-- ============ BOTTOM RIGHT: TAXES & TRADE ============ -->
-    <div class="panel" id="controlsPanel">
+        <div class="statRow"><span>Жители:</span><span id="pop"></span></div>
+        <div class="statRow"><span>Еда:</span><span id="food"></span></div>
+        <div class="statRow"><span>Золото:</span><span id="gold"></span></div>
+        <div class="statRow"><span>Железо:</span><span id="iron"></span></div>
+        <div class="statRow"><span>Оружие:</span><span id="weapons"></span></div>
+        <div class="statRow"><span>Солдаты:</span><span id="army"></span></div>
+        <div class="statRow"><span>Популярность:</span><span id="popularity"></span></div>
+        <div class="statRow"><span>Замок:</span><span id="castle"></span></div>
+        <div class="statRow"><span>Титул:</span><span id="rank"></span></div>
+
+        <hr>
+
         <h3>Налоги и пайки</h3>
 
-        <label>Налоги (%):
+        <div class="inputRow">
+            <label>Налоги (%):</label>
             <input id="taxRate" type="number" min="0" max="100" value="30">
-        </label><br><br>
+        </div>
 
-        <label>Еда на человека:
+        <div class="inputRow">
+            <label>Еда на человека:</label>
             <input id="foodRate" type="number" min="0" max="10" value="3">
-        </label>
+        </div>
 
-        <h3 style="margin-top:15px;">Торговля</h3>
+        <hr>
+
+        <h3>Торговля</h3>
         <button onclick="sellFood()">Продать еду</button>
         <button onclick="buyFood()">Купить еду</button>
         <button onclick="sellIron()">Продать железо</button>
         <button onclick="buyIron()">Купить железо</button>
         <button onclick="sellWeapons()">Продать оружие</button>
         <button onclick="buyWeapons()">Купить оружие</button>
+
     </div>
 
 </div>
 
-<!-- ====================== ADVISOR PANEL ====================== -->
-<div class="panel" id="advisorPanel" style="position:fixed; right:10px; bottom:10px; width:260px;">
-    <h3>Советник</h3>
-    <pre id="advisor"></pre>
+<!-- ======= КНОПКА ГОДА ======= -->
+<div id="yearButtonWrap">
+    <button id="endTurnButton" onclick="endTurn()">Следующий год</button>
 </div>
 
-<!-- ====================== POPUP: BUILDING ====================== -->
-<div id="popupOverlay">
-    <div id="popupBox">
-        <div id="popupTitle"></div>
-        <div class="popup-desc" id="popupDesc"></div>
+<!-- ======= ПОПАП ДЛЯ СТРОИТЕЛЬСТВА ======= -->
+<div id="buildPopup" class="popup hidden">
+    <div class="popupBox">
+        <h3 id="buildTitle"></h3>
+        <img id="buildIcon" class="buildIcon">
+        <p id="buildDesc"></p>
 
-        <div class="popup-buttons">
-            <button onclick="confirmBuild(1)">Построить 1</button>
-            <button onclick="confirmBuild(5)">Построить 5</button>
-            <button onclick="confirmBuild(10)">Построить 10</button>
+        <label>Количество:
+            <input id="buildAmount" type="number" min="1" value="1">
+        </label>
 
-            <button style="margin-top:15px;" onclick="closePopup()">Отмена</button>
-        </div>
+        <button onclick="confirmBuild()">Построить</button>
+        <button onclick="closeBuildPopup()">Отмена</button>
     </div>
 </div>
 
-<!-- ====================== REPORT POPUP ====================== -->
+<!-- ======= ОТЧЁТ ЗА ГОД ======= -->
 <div id="reportPanel" class="hidden">
     <div id="reportBox">
         <h3>Отчёт за год</h3>
@@ -149,4 +123,3 @@
 
 </body>
 </html>
-
