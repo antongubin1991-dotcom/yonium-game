@@ -121,21 +121,49 @@ h2 {
 
 /* яркие, контрастные, увеличенные иконки */
 .mapIcon {
-    width: 90%;
-    height: 90%;
-    margin: auto;
-
-    background-repeat: no-repeat;
-    background-position: center;
+    width: 95%;
+    height: 95%;
     background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 
     filter:
         drop-shadow(0 0 3px #000)
         brightness(1.4)
-        contrast(1.4)
-        saturate(1.3);
+        contrast(1.4);
 
-    animation: mapPop 0.25s ease-out;
+    animation: mapPop 0.2s ease-out;
+}
+
+.icon-castle {
+    filter:
+        drop-shadow(0 0 6px gold)
+        brightness(1.6)
+        contrast(1.6);
+}
+@keyframes mapPop {
+    0% { transform: scale(0.3); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+/* ===== ЛАНДШАФТ МИНИ-КАРТЫ ===== */
+
+.terrain-grass {
+    background: linear-gradient(#3d3f3d, #2b2d2b);
+}
+
+.terrain-forest {
+    background: linear-gradient(#2e332e, #1f221f);
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+}
+
+.terrain-water {
+    background: radial-gradient(circle, #1e3c55, #0c1823);
+    box-shadow: inset 0 0 10px rgba(0,60,120,0.5);
+}
+
+.terrain-road {
+    background: linear-gradient(#5a4a30, #3b301e);
+    box-shadow: inset 0 0 5px rgba(255,215,160,0.15);
 }
 
 /* иконки — чтобы были заметны */
@@ -339,4 +367,5 @@ h1, h2, h3 {
     pointer-events: none;
     z-index: -1;
 }
+
 
