@@ -6,13 +6,13 @@
 let state = {
     year: 1450,
     pop: 1000,
-    food: 2000,
-    gold: 1500,
+    food: 500,
+    gold: 500,
     iron: 0,
     weapons: 0,
     army: 0,
     popularity: 50,
-    castle: 1,
+    castle: 0,
 
     farms: 0,
     mines: 0,
@@ -21,14 +21,13 @@ let state = {
 
     map: [],
 
-    /* popup */
     pendingBuild: null,
     pendingAmount: 1
 };
 
 
 /* ============================================================
-   ========    АВТОСОХРАНЕНИЕ И ВОССТАНОВЛЕНИЕ    ==============
+   === АВТОСОХРАНЕНИЕ ===
 ============================================================ */
 
 function saveGame() {
@@ -41,42 +40,48 @@ function loadGame() {
     try {
         state = JSON.parse(data);
     } catch {
-        console.warn("Ошибка загрузки сохранения");
+        console.warn("Ошибка чтения сохранения");
     }
 }
 
 loadGame();
 
 
+
 /* ============================================================
-    ИНИЦИАЛИЗАЦИЯ МИНИКАРТЫ
+    === МИНИ-КАРТА ===
 ============================================================ */
 
-const terrainTypes = ["terrain-grass", "terrain-forest", "terrain-water", "terrain-road"];
+const terrainTypes = [
+    "terrain-grass",
+    "terrain-forest",
+    "terrain-water",
+    "terrain-road"
+];
 
 function generateMap() {
-    if (state.map.length > 0) return; // уже есть карта
+    if (state.map.length > 0) return;
 
     for (let i = 0; i < 100; i++) {
-        const tile = terrainTypes[Math.floor(Math.random() * terrainTypes.length)];
-        state.map.push({ type: tile, building: null });
+        state.map.push({
+            type: terrainTypes[Math.floor(Math.random() * terrainTypes.length)],
+            building: null
+        });
     }
-
-    saveGame();
 }
 
 function renderMap() {
     const grid = document.getElementById("mapGrid");
     grid.innerHTML = "";
 
-    state.map.forEach((cell, i) => {
+    state.map.forEach(cell => {
         const div = document.createElement("div");
         div.className = "mapCell " + cell.type;
 
         if (cell.building) {
-            const b = document.createElement("div");
-            b.className = "mapIcon icon-" + cell.building;
-            div.appendChild(b);
+            const icon = document.createElement("div");
+            icon.className = "mapIcon icon-" + cell.building;
+            div.appendChild(icon);
         }
 
         grid.appendChild(div);
@@ -86,7 +91,7 @@ function renderMap() {
 
 
 /* ============================================================
-    ОБНОВЛЕНИЕ UI
+    === UI UPDATE ===
 ============================================================ */
 
 function updateUI() {
@@ -99,7 +104,7 @@ function updateUI() {
     document.getElementById("weapons").textContent = state.weapons;
     document.getElementById("army").textContent = state.army;
     document.getElementById("popularity").textContent = state.popularity + "%";
-    document.getElementById("castle").textContent = state.castle;
+    document.getElementById("castle").textContent = state.castle + " / 8";
 
     updateRank();
     renderMap();
@@ -107,8 +112,9 @@ function updateUI() {
 }
 
 
+
 /* ============================================================
-    ТИТУЛЫ
+    === ТИТУЛЫ ===
 ============================================================ */
 
 function updateRank() {
@@ -119,8 +125,7 @@ function updateRank() {
     if (state.pop >= 2000 && state.popularity >= 70 && state.castle >= 1 && state.army >= 10) rank = "Герцог";
     if (state.pop >= 3000 && state.popularity >= 75 && state.castle >= 2 && state.army >= 25) rank = "Принц";
     if (state.pop >= 5000 && state.popularity >= 80 && state.castle >= 6 && state.army >= 200 && state.gold >= 100000) rank = "Король";
-    if (state.pop >= 10000 && state.popularity >= 90 && state.castle >= 8 && state.army >= 500 && state.gold >= 1000000)
-        rank = "Император";
+    if (state.pop >= 10000 && state.popularity >= 90 && state.castle >= 8 && state.army >= 500 && state.gold >= 1000000) rank = "Император";
 
     document.getElementById("rank").textContent = rank;
 }
@@ -128,13 +133,13 @@ function updateRank() {
 
 
 /* ============================================================
-    POPUP СТРОИТЕЛЬСТВА
+    === POPUP СТРОИТЕЛЬСТВА ===
 ============================================================ */
 
 const buildingInfo = {
     farm:  { title: "Ферма",  icon: "icon_farm.png",  desc: "+500 еды в год", cost: 100 },
     mine:  { title: "Шахта",  icon: "icon_mine.png",  desc: "+10 железа в год", cost: 200 },
-    market:{ title: "Рынок",  icon: "icon_market.png",desc: "Открывает торговлю", cost: 300 },
+    market:{ title: "Рынок",  icon: "icon_market.png", desc: "Открывает торговлю", cost: 300 },
     forge: { title: "Кузница",icon: "icon_forge.png", desc: "Позволяет ковать оружие", cost: 150 }
 };
 
@@ -146,7 +151,7 @@ function openBuildPopup(type) {
     document.getElementById("popupIcon").src = "assets/icons/" + data.icon;
     document.getElementById("popupTitle").textContent = data.title;
     document.getElementById("popupDesc").textContent = data.desc;
-    document.getElementById("popupCost").textContent = "Стоимость: " + data.cost + " золота за единицу";
+    document.getElementById("popupCost").textContent = "Стоимость: " + data.cost + " золота";
 
     document.getElementById("buildPopup").classList.remove("hidden");
 }
@@ -159,14 +164,9 @@ function confirmBuild() {
     const amount = parseInt(document.getElementById("popupAmount").value);
     const type = state.pendingBuild;
 
-    if (!type) return;
-
     const cost = buildingInfo[type].cost * amount;
 
-    if (state.gold < cost) {
-        alert("Недостаточно золота!");
-        return;
-    }
+    if (state.gold < cost) return alert("Недостаточно золота!");
 
     state.gold -= cost;
 
@@ -186,7 +186,7 @@ function confirmBuild() {
 
 
 /* ============================================================
-    РАЗМЕЩЕНИЕ НА КАРТЕ
+    === КАРТА: РАЗМЕЩЕНИЕ ПОСТРОЕК ===
 ============================================================ */
 
 function placeBuildingOnMap(type) {
@@ -199,8 +199,9 @@ function placeBuildingOnMap(type) {
 }
 
 
+
 /* ============================================================
-    ЗАМКОВЫЕ УЛУЧШЕНИЯ
+    === УЛУЧШЕНИЕ ЗАМКА (без castle1.png / castle2.png) ===
 ============================================================ */
 
 function upgradeCastle() {
@@ -209,7 +210,7 @@ function upgradeCastle() {
         return;
     }
 
-    const cost = 500 * state.castle;
+    const cost = 500 * (state.castle + 1);
 
     if (state.gold < cost) {
         alert("Нужно золота: " + cost);
@@ -219,13 +220,10 @@ function upgradeCastle() {
     state.gold -= cost;
     state.castle++;
 
-    // Если у тебя одна картинка, просто пульсуем яркость
-    const castleImg = document.getElementById("castleImage");
-    castleImg.classList.add("castle-upgrade");
-
-    setTimeout(() => {
-        castleImg.classList.remove("castle-upgrade");
-    }, 1000);
+    // Эффект без смены изображения
+    const img = document.getElementById("castleImage");
+    img.classList.add("castle-upgrade");
+    setTimeout(() => img.classList.remove("castle-upgrade"), 900);
 
     updateUI();
 }
@@ -233,7 +231,7 @@ function upgradeCastle() {
 
 
 /* ============================================================
-    АРМИЯ
+    === АРМИЯ ===
 ============================================================ */
 
 function craftWeapon() {
@@ -257,12 +255,12 @@ function hireSoldier() {
 
 
 /* ============================================================
-    ТОРГОВЛЯ
+    === ТОРГОВЛЯ ===
 ============================================================ */
 
 function sellFood() {
     if (state.markets < 1) return alert("Нужен рынок!");
-    if (state.food < 50) return alert("Недостаточно еды!");
+    if (state.food < 50) return alert("Мало еды!");
 
     state.food -= 50;
     state.gold += 50;
@@ -271,7 +269,7 @@ function sellFood() {
 
 function buyFood() {
     if (state.markets < 1) return alert("Нужен рынок!");
-    if (state.gold < 50) return alert("Недостаточно золота!");
+    if (state.gold < 50) return alert("Мало золота!");
 
     state.gold -= 50;
     state.food += 50;
@@ -289,7 +287,7 @@ function sellIron() {
 
 function buyIron() {
     if (state.markets < 5) return alert("Нужно 5 рынков!");
-    if (state.gold < 120) return alert("Недостаточно золота!");
+    if (state.gold < 120) return alert("Мало золота!");
 
     state.gold -= 120;
     state.iron++;
@@ -307,7 +305,7 @@ function sellWeapons() {
 
 function buyWeapons() {
     if (state.markets < 10) return alert("Нужно 10 рынков!");
-    if (state.gold < 300) return alert("Недостаточно золота!");
+    if (state.gold < 300) return alert("Мало золота!");
 
     state.gold -= 300;
     state.weapons++;
@@ -317,7 +315,7 @@ function buyWeapons() {
 
 
 /* ============================================================
-    КОНЕЦ ГОДА
+    === КОНЕЦ ГОДА ===
 ============================================================ */
 
 function endTurn() {
@@ -326,58 +324,50 @@ function endTurn() {
     const taxRate = parseInt(document.getElementById("taxRate").value);
     const foodRate = parseInt(document.getElementById("foodRate").value);
 
-    let report = "Год " + state.year + ":\n\n";
+    let log = "Год " + state.year + ":\n\n";
 
-    /* Налоги */
     const taxIncome = Math.floor(state.pop * (taxRate / 100));
     state.gold += taxIncome;
-    report += "Получено налогов: " + taxIncome + "\n";
+    log += "Налоги: +" + taxIncome + "\n";
 
-    /* Производство */
     const foodGain = state.farms * 500;
     const ironGain = state.mines * 10;
-
     state.food += foodGain;
     state.iron += ironGain;
 
-    report += "Фермы дали еды: " + foodGain + "\n";
-    report += "Шахты дали железа: " + ironGain + "\n";
+    log += `Фермы: +${foodGain} еды\n`;
+    log += `Шахты: +${ironGain} железа\n`;
 
-    /* Расход еды */
     const foodNeeded = state.pop * foodRate;
     state.food -= foodNeeded;
 
     if (state.food < 0) {
-        state.popularity -= 10;
+        state.popularity -= 15;
         state.pop += Math.floor(state.food / 50);
         state.food = 0;
-        report += "Не хватило еды! Популярность ↓\n";
+        log += "ГОЛОД! Популярность сильно упала.\n";
     }
 
-    /* Рост населения */
     const growth = Math.floor((state.popularity / 100) * 20);
     state.pop += growth;
-    report += "Прирост населения: " + growth + "\n";
+    log += `Прирост населения: +${growth}\n`;
 
-    /* Популярность */
     if (taxRate < 20) state.popularity += 2;
-    if (taxRate > 50) state.popularity -= 3;
+    if (taxRate > 50) state.popularity -= 4;
 
     if (state.popularity < 0) state.popularity = 0;
     if (state.popularity > 100) state.popularity = 100;
 
-    /* Конец игры */
-    if (state.year >= 1500) {
-        alert("Тёмный Император вернулся. Трон не занят. Игра начинается заново.");
-        localStorage.removeItem("yoniumGame");
-        location.reload();
-        return;
-    }
-
     updateUI();
 
-    document.getElementById("reportText").textContent = report;
+    document.getElementById("reportText").textContent = log;
     document.getElementById("reportPanel").classList.remove("hidden");
+
+    if (state.year >= 1500) {
+        alert("Тёмный Император вернулся. Игра начинается заново.");
+        localStorage.removeItem("yoniumGame");
+        location.reload();
+    }
 }
 
 function closeReport() {
@@ -387,9 +377,8 @@ function closeReport() {
 
 
 /* ============================================================
-    СТАРТ ИГРЫ
+    === START ===
 ============================================================ */
 
 generateMap();
 updateUI();
-
