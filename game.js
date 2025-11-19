@@ -508,10 +508,86 @@ function updateMiniMap() {
         map.appendChild(div);
     });
 }
+// ==============================
+// ГЛОБАЛЬНЫЙ МЕТА-ПРОГРЕСС
+// ==============================
 
+// Здесь можно хранить бонусы, которые будут действовать в следующих прохождениях
+let meta = JSON.parse(localStorage.getItem("metaProgress")) || {
+    completedRuns: 0,
+    bonusFood: 0,
+    bonusGold: 0,
+    bonusPopulation: 0
+};
+
+function saveMeta() {
+    localStorage.setItem("metaProgress", JSON.stringify(meta));
+}
+
+
+// ==============================
+// КОНЕЦ ИГРЫ: ПОБЕДА / ПОРАЖЕНИЕ
+// ==============================
+
+function checkEndGame() {
+    // Победа: игрок стал императором
+    if (game.castleLevel === 8 && game.population >= 10000 && game.popularity >= 90 && game.army >= 500 && game.gold >= 1000000) {
+        endGame(true);
+    }
+
+    // Поражение: настал 1500 год
+    if (game.year >= 1500) {
+        endGame(false);
+    }
+}
+
+function endGame(victory) {
+
+    if (victory) {
+        alert("🎉 Победа! Вы стали новым Императором!\nИгра начнётся заново, но ваш прогресс сохранён.");
+
+        // МЕТА-БОНУСЫ за победу
+        meta.completedRuns++;
+        meta.bonusFood += 200;
+        meta.bonusGold += 500;
+        meta.bonusPopulation += 20;
+        saveMeta();
+
+    } else {
+        alert("💀 Поражение! Тёмный Император вернулся...\nПопробуйте снова — вы станете сильнее.");
+    }
+
+    restartGame();
+}
+
+
+// ==============================
+// СТАРТ НОВОЙ ИГРЫ
+// ==============================
+
+function restartGame() {
+    game = {
+        year: 1450,
+        population: 500 + meta.bonusPopulation,
+        food: 2000 + meta.bonusFood,
+        gold: 1000 + meta.bonusGold,
+        iron: 0,
+        weapons: 0,
+        army: 0,
+        popularity: 50,
+        farms: 0,
+        mines: 0,
+        markets: 0,
+        forges: 0,
+        castleLevel: 0
+    };
+
+    updateUI();
+}
 // ======================================================
 //                 СТАРТ
 // ======================================================
 updateUI();
+
 
 
