@@ -13,15 +13,17 @@
     <h2 id="yearLabel">Год: 1450</h2>
 </div>
 
+
 <!-- ==== ОСНОВНАЯ СЕТКА ==== -->
 <div id="mainContainer">
 
-    <!-- ==== ЗАМКОВАЯ ЗОНА ==== -->
+    <!-- ==== ЗАМОК ==== -->
     <div id="castleView">
         <img id="castleImage" src="assets/castle1.png" alt="castle">
     </div>
 
-    <!-- ==== ЛЕВАЯ КОЛОНКА ==== -->
+
+    <!-- ==== ЛЕВАЯ ПАНЕЛЬ: СТАТИСТИКА ==== -->
     <div class="panel">
         <h3>Статистика</h3>
         <table>
@@ -38,39 +40,39 @@
     </div>
 
 
-    <!-- ==== МИНИ-КАРТА ==== -->
+    <!-- ==== МИНИКАРТА ==== -->
     <div id="miniMap" class="panel">
         <h3>Карта поселения</h3>
         <div id="mapGrid"></div>
     </div>
 
 
-    <!-- ==== ПРАВАЯ КОЛОНКА: СТРОИТЕЛЬСТВО ==== -->
+    <!-- ==== ПРАВАЯ ПАНЕЛЬ: СТРОИТЕЛЬСТВО ==== -->
     <div class="panel">
         <h3>Строительство</h3>
 
         <div class="buildIcon" onclick="openBuildPopup('farm')">
-            <img src="assets/icons/icon_farm.png">
+            <img src="assets/icons/icon_farm.png" />
             <span>Ферма</span>
         </div>
 
         <div class="buildIcon" onclick="openBuildPopup('mine')">
-            <img src="assets/icons/icon_mine.png">
+            <img src="assets/icons/icon_mine.png" />
             <span>Шахта</span>
         </div>
 
         <div class="buildIcon" onclick="openBuildPopup('market')">
-            <img src="assets/icons/icon_market.png">
+            <img src="assets/icons/icon_market.png" />
             <span>Рынок</span>
         </div>
 
         <div class="buildIcon" onclick="openBuildPopup('forge')">
-            <img src="assets/icons/icon_forge.png">
+            <img src="assets/icons/icon_forge.png" />
             <span>Кузница</span>
         </div>
 
         <div class="buildIcon" onclick="upgradeCastle()">
-            <img src="assets/icons/icon_castle.png">
+            <img src="assets/icons/icon_castle.png" />
             <span>Строить замок</span>
         </div>
     </div>
@@ -79,25 +81,20 @@
     <!-- ==== АРМИЯ ==== -->
     <div class="panel">
         <h3>Армия</h3>
-
         <button onclick="craftWeapon()">Ковать оружие</button>
         <button onclick="hireSoldier()">Нанять солдата</button>
     </div>
 
 
-    <!-- ==== НАЛОГИ И ПИЩА ==== -->
+    <!-- ==== НАЛОГИ ==== -->
     <div class="panel">
         <h3>Налоги и пища</h3>
 
-        <label>
-            Налоги (%):
-            <input id="taxRate" type="number" min="0" max="100" value="30">
-        </label>
-        <br><br>
-        <label>
-            Еда на человека:
-            <input id="foodRate" type="number" min="0" max="10" value="3">
-        </label>
+        <label>Налоги (%):</label><br>
+        <input id="taxRate" type="number" min="0" max="100" value="30"><br><br>
+
+        <label>Еда на человека:</label><br>
+        <input id="foodRate" type="number" min="0" max="10" value="3">
     </div>
 
 
@@ -120,27 +117,21 @@
     </div>
 
 
-    <!-- ==== КНОПКА СЛЕДУЮЩЕГО ГОДА ==== -->
+    <!-- ==== СЛЕДУЮЩИЙ ГОД ==== -->
     <button class="nextYear" onclick="endTurn()">Следующий год ▶</button>
 
-</div> <!-- /mainContainer -->
+</div>
 
 
-
-<!-- ====================================================== -->
-<!--             POPUP ОКНО ДЛЯ СТРОИТЕЛЬСТВА               -->
-<!-- ====================================================== -->
-
+<!-- ==== POPUP СТРОИТЕЛЬСТВА ==== -->
 <div id="buildPopup" class="hidden popup">
     <div class="popupBox">
-
-        <img id="popupIcon" alt="">
+        <img id="popupIcon">
         <h3 id="popupTitle"></h3>
-
         <p id="popupDesc"></p>
         <p id="popupCost"></p>
 
-        <label>Количество:</label><br>
+        <label>Количество:</label>
         <select id="popupAmount">
             <option value="1">1</option>
             <option value="5">5</option>
@@ -148,17 +139,13 @@
             <option value="25">25</option>
         </select>
 
-        <br><br>
         <button onclick="confirmBuild()">Построить</button>
         <button onclick="closeBuildPopup()">Закрыть</button>
     </div>
 </div>
 
 
-<!-- ====================================================== -->
-<!--                  ПОПАП ОТЧЁТА ЗА ГОД                   -->
-<!-- ====================================================== -->
-
+<!-- ==== popup отчёта ==== -->
 <div id="reportPanel" class="hidden">
     <div id="reportBox">
         <h3>Отчёт за год</h3>
