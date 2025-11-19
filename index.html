@@ -4,30 +4,28 @@
     <meta charset="UTF-8">
     <title>Йониум — Империя Тьмы</title>
     <link rel="stylesheet" href="style.css">
-
-    <!-- Фавикон (чтобы не было 404) -->
     <link rel="icon" href="assets/icons/icon_castle.png">
 </head>
 
 <body>
 
-<!-- ===================== HEADER ===================== -->
+<!-- ===================== TOP BAR ===================== -->
 <div id="topBar">
-    <h1>ЙОНИУМ</h1>
+    <h1>ЙОНИУМ — Империя Тьмы</h1>
     <h2 id="yearLabel">Год: 1450</h2>
 </div>
 
-<!-- ===================== MAIN LAYOUT ===================== -->
-<div id="layout">
+<!-- ===================== MAIN GRID ===================== -->
+<div id="mainGrid">
 
     <!-- ===== LEFT: MINI MAP ===== -->
-    <div id="leftPanel" class="panel">
+    <div id="miniMapPanel" class="panel">
         <h3>Поселение</h3>
         <div id="mapGrid"></div>
     </div>
 
-    <!-- ===== CENTER: BUILDINGS ===== -->
-    <div id="centerPanel" class="panel">
+    <!-- ===== CENTER: BUILDING ACTIONS ===== -->
+    <div id="buildPanel" class="panel">
         <h3>Строительство</h3>
 
         <button onclick="openBuildPopup('farm')">
@@ -56,8 +54,8 @@
         <button onclick="hireSoldier()">Нанять солдата</button>
     </div>
 
-    <!-- ===== RIGHT: STATS ===== -->
-    <div id="rightPanel" class="panel">
+    <!-- ===== RIGHT: STATISTICS ===== -->
+    <div id="statsPanel" class="panel">
         <h3>Статистика</h3>
 
         <div class="statRow"><span>Жители:</span><span id="pop"></span></div>
@@ -93,35 +91,26 @@
         <button onclick="buyIron()">Купить железо</button>
         <button onclick="sellWeapons()">Продать оружие</button>
         <button onclick="buyWeapons()">Купить оружие</button>
-
     </div>
 
 </div>
 
-<!-- ===================== NEXT YEAR BUTTON ===================== -->
+<!-- ===== NEXT YEAR BUTTON ===== -->
 <div id="yearButtonWrap">
     <button id="endTurnButton" onclick="endTurn()">Следующий год</button>
 </div>
 
-<!-- ===================== ADVISOR ===================== -->
-<div id="advisorPanel" class="panel" style="
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 260px;
-    z-index: 50;
-">
+<!-- ===== ADVISOR ===== -->
+<div id="advisorPanel" class="panel">
     <h3>Советник</h3>
-    <pre id="advisor">Здесь будут подсказки советника…</pre>
+    <pre id="advisor">Советы появятся здесь…</pre>
 </div>
 
-<!-- ===================== BUILD POPUP ===================== -->
+<!-- ===== BUILD POPUP ===== -->
 <div id="buildPopup" class="popup hidden">
     <div class="popupBox">
         <h3 id="buildTitle"></h3>
-
         <img id="buildIcon" class="buildIcon">
-
         <p id="buildDesc"></p>
 
         <label>Количество:
@@ -133,7 +122,7 @@
     </div>
 </div>
 
-<!-- ===================== YEAR REPORT POPUP ===================== -->
+<!-- ===== YEAR REPORT POPUP ===== -->
 <div id="reportPanel" class="popup hidden">
     <div id="reportBox" class="popupBox">
         <h3>Отчёт за год</h3>
