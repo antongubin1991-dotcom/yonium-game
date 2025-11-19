@@ -1,533 +1,393 @@
-// ======================================================
-//                НАЧАЛЬНЫЕ ДАННЫЕ ИГРЫ
-// ======================================================
+/* ============================================================
+    Империя Тьмы — основной движок
+============================================================ */
 
-const STORAGE_KEY = "yonium_game_state";
-const terrainTypes = {
-    grass: "terrain-grass",
-    forest: "terrain-forest",
-    water: "terrain-water",
-    road: "terrain-road"
+/* --------- СОСТОЯНИЕ ИГРЫ --------- */
+let state = {
+    year: 1450,
+    pop: 1000,
+    food: 2000,
+    gold: 1500,
+    iron: 0,
+    weapons: 0,
+    army: 0,
+    popularity: 50,
+    castle: 1,
+
+    farms: 0,
+    mines: 0,
+    markets: 0,
+    forges: 0,
+
+    map: [],
+
+    /* popup */
+    pendingBuild: null,
+    pendingAmount: 1
 };
-function createInitialGameState() {
-    return {
-        year: 1450,
 
-        population: 1000,
-        food: 500,
-        gold: 500,
-        iron: 0,
-        weapons: 0,
-        army: 0,
 
-        farms: 0,
-        mines: 0,
-        markets: 0,
-        forges: 0,
-
-        popularity: 50,   // 0–100
-        taxRate: 30,      // %
-        foodRate: 3,      // порций на человека
-
-        castleLevel: 0,
-        castleProgress: 0,
-
-        rankIndex: 0,
-        lastReport: ""
-    };
-}
-
-let game = null;
-
-// ======================================================
-//                      ТИТУЛЫ
-// ======================================================
-
-const ranks = [
-    { name: "Барон",     pop: 1100,  popu: 60, castle: 0, army: 0,    gold: 0 },
-    { name: "Граф",      pop: 1400,  popu: 65, castle: 0, army: 0,    gold: 0 },
-    { name: "Герцог",    pop: 2000,  popu: 70, castle: 1, army: 10,   gold: 0 },
-    { name: "Принц",     pop: 3000,  popu: 75, castle: 2, army: 25,   gold: 0 },
-    { name: "Король",    pop: 5000,  popu: 80, castle: 6, army: 200,  gold: 100000 },
-    { name: "Император", pop: 10000, popu: 90, castle: 8, army: 500,  gold: 1000000 }
-];
-
-// ======================================================
-//                 ЗАГРУЗКА / СОХРАНЕНИЕ
-// ======================================================
-
-function loadGame() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        const obj = JSON.parse(raw);
-        // минимальная проверка
-        if (typeof obj.year !== "number") return null;
-        return obj;
-    } catch (e) {
-        return null;
-    }
-}
+/* ============================================================
+   ========    АВТОСОХРАНЕНИЕ И ВОССТАНОВЛЕНИЕ    ==============
+============================================================ */
 
 function saveGame() {
+    localStorage.setItem("yoniumGame", JSON.stringify(state));
+}
+
+function loadGame() {
+    const data = localStorage.getItem("yoniumGame");
+    if (!data) return;
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(game));
-    } catch (e) {
-        console.warn("Не удалось сохранить игру:", e);
+        state = JSON.parse(data);
+    } catch {
+        console.warn("Ошибка загрузки сохранения");
     }
 }
 
-// ======================================================
-//                    ОБНОВЛЕНИЕ РАНГА
-// ======================================================
+loadGame();
 
-function updateRank() {
-    for (let i = ranks.length - 1; i >= 0; i--) {
-        const r = ranks[i];
-        if (
-            game.population >= r.pop &&
-            game.popularity >= r.popu &&
-            game.castleLevel >= r.castle &&
-            game.army >= r.army &&
-            game.gold >= r.gold
-        ) {
-            game.rankIndex = i;
-            break;
-        }
+
+/* ============================================================
+    ИНИЦИАЛИЗАЦИЯ МИНИКАРТЫ
+============================================================ */
+
+const terrainTypes = ["terrain-grass", "terrain-forest", "terrain-water", "terrain-road"];
+
+function generateMap() {
+    if (state.map.length > 0) return; // уже есть карта
+
+    for (let i = 0; i < 100; i++) {
+        const tile = terrainTypes[Math.floor(Math.random() * terrainTypes.length)];
+        state.map.push({ type: tile, building: null });
     }
+
+    saveGame();
 }
 
-// ======================================================
-//                      ОБНОВЛЕНИЕ UI
-// ======================================================
+function renderMap() {
+    const grid = document.getElementById("mapGrid");
+    grid.innerHTML = "";
 
-function updateUI() {
-    if (!game) return;
+    state.map.forEach((cell, i) => {
+        const div = document.createElement("div");
+        div.className = "mapCell " + cell.type;
 
-    // Год
-    const yearLabel = document.getElementById("yearLabel");
-    if (yearLabel) {
-        yearLabel.textContent = "Год: " + game.year;
-    }
-
-    // Статистика
-    const setText = (id, value) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = value;
-    };
-
-    setText("pop", game.population);
-    setText("food", game.food);
-    setText("gold", game.gold.toLocaleString());
-    setText("iron", game.iron);
-    setText("weapons", game.weapons);
-    setText("army", game.army);
-    setText("popularity", game.popularity + "%");
-    setText("castle", game.castleLevel + " / 8");
-    setText("rank", ranks[game.rankIndex].name);
-
-    // Инпуты налогов и еды
-    const taxInput = document.getElementById("taxRate");
-    const foodInput = document.getElementById("foodRate");
-    if (taxInput) taxInput.value = game.taxRate;
-    if (foodInput) foodInput.value = game.foodRate;
-
-    updateAdvisor();
-    updateCastleImage();
-    updateMiniMap();
-}
-
-// ======================================================
-//                    КАРТИНКА ЗАМКА
-// ======================================================
-
-function updateCastleImage() {
-    const img = document.getElementById("castleImage");
-    if (!img) return;
-    // Можно сделать набор картинок castle0.png...castle8.png
-    img.src = `assets/castle${game.castleLevel}.png`;
-}
-
-// ======================================================
-//                     МИНИ-КАРТА
-// ======================================================
-
-function updateMiniMap() {
-    const map = document.getElementById("mapGrid");
-    if (!map) return;
-
-    map.innerHTML = "";
-
-    const size = 10;        // 10×10
-    const cells = [];
-
-    // === 1. Генерация ландшафта ===
-    for (let i = 0; i < size * size; i++) {
-        let r = Math.random();
-        let type;
-
-        if (r < 0.10) type = terrainTypes.water;        // 10% вода
-        else if (r < 0.40) type = terrainTypes.forest;  // 30% лес
-        else type = terrainTypes.grass;                 // 60% трава
-
-        cells.push({ terrain: type, building: null });
-    }
-
-    // === 2. Генерация дорог в стиле Diablo: диагональные + хаотичные ===
-    for (let y = 0; y < size; y++) {
-        let index = y * size + Math.floor(size * 0.5) + (Math.random() > 0.5 ? 1 : -1);
-        if (cells[index]) cells[index].terrain = terrainTypes.road;
-    }
-
-    // === 3. Размещение зданий ===
-    function place(count, cls) {
-        for (let i = 0; i < count; i++) {
-            let pos = Math.floor(Math.random() * size * size);
-            let attempts = 0;
-
-            while (cells[pos].building !== null && attempts < 40) {
-                pos = Math.floor(Math.random() * size * size);
-                attempts++;
-            }
-
-            cells[pos].building = cls;
-        }
-    }
-
-    place(game.farms, "icon-farm");
-    place(game.mines, "icon-mine");
-    place(game.markets, "icon-market");
-    place(game.forges, "icon-forge");
-
-    // === 4. Замок по центру ===
-    const castlePos = 55;
-    cells[castlePos].building = "icon-castle";
-
-    // === 5. Рендер ===
-    cells.forEach(c => {
-        const cell = document.createElement("div");
-        cell.classList.add("mapCell", c.terrain);
-
-        if (c.building) {
-            const icon = document.createElement("div");
-            icon.classList.add("mapIcon", c.building);
-            cell.appendChild(icon);
+        if (cell.building) {
+            const b = document.createElement("div");
+            b.className = "mapIcon icon-" + cell.building;
+            div.appendChild(b);
         }
 
-        map.appendChild(cell);
+        grid.appendChild(div);
     });
 }
 
-// ======================================================
-//                        СОВЕТНИК
-// ======================================================
 
-function updateAdvisor() {
-    const el = document.getElementById("advisor");
-    if (!el) return;
 
-    const needRank = ranks[Math.min(game.rankIndex + 1, ranks.length - 1)];
-    let msg = "";
+/* ============================================================
+    ОБНОВЛЕНИЕ UI
+============================================================ */
 
-    msg += `Текущий титул: ${ranks[game.rankIndex].name}\n`;
-    if (game.rankIndex < ranks.length - 1) {
-        msg += `Следующий титул: ${needRank.name}\n\n`;
-        msg += "Условия повышения:\n";
-        msg += `Жители: ${game.population}/${needRank.pop}\n`;
-        msg += `Популярность: ${game.popularity}/${needRank.popu}\n`;
-        msg += `Замок: ${game.castleLevel}/${needRank.castle}\n`;
-        msg += `Солдаты: ${game.army}/${needRank.army}\n`;
-        msg += `Золото: ${game.gold}/${needRank.gold}\n`;
-    } else {
-        msg += "\nВы достигли высшего титула — Император.\nСдерживайте Тёмного Императора до 1500 года!";
-    }
+function updateUI() {
+    document.getElementById("yearLabel").textContent = "Год: " + state.year;
 
-    el.textContent = msg;
-}
+    document.getElementById("pop").textContent = state.pop;
+    document.getElementById("food").textContent = state.food;
+    document.getElementById("gold").textContent = state.gold;
+    document.getElementById("iron").textContent = state.iron;
+    document.getElementById("weapons").textContent = state.weapons;
+    document.getElementById("army").textContent = state.army;
+    document.getElementById("popularity").textContent = state.popularity + "%";
+    document.getElementById("castle").textContent = state.castle;
 
-// ======================================================
-//                      СТРОИТЕЛЬСТВО
-// ======================================================
-
-function build(type) {
-    if (type === "farm") {
-        if (game.gold < 100) return alert("Недостаточно золота для фермы.");
-        game.gold -= 100;
-        game.farms++;
-    } else if (type === "mine") {
-        if (game.gold < 200) return alert("Недостаточно золота для шахты.");
-        game.gold -= 200;
-        game.mines++;
-    } else if (type === "market") {
-        if (game.gold < 300) return alert("Недостаточно золота для рынка.");
-        game.gold -= 300;
-        game.markets++;
-    } else if (type === "forge") {
-        if (game.gold < 150) return alert("Недостаточно золота для кузницы.");
-        game.gold -= 150;
-        game.forges++;
-    }
-
+    updateRank();
+    renderMap();
     saveGame();
-    updateUI();
 }
 
-function upgradeCastle() {
-    if (game.castleLevel >= 8) {
-        alert("Замок уже полностью построен.");
+
+/* ============================================================
+    ТИТУЛЫ
+============================================================ */
+
+function updateRank() {
+    let rank = "Крестьянин";
+
+    if (state.pop >= 1100 && state.popularity >= 60) rank = "Барон";
+    if (state.pop >= 1400 && state.popularity >= 65) rank = "Граф";
+    if (state.pop >= 2000 && state.popularity >= 70 && state.castle >= 1 && state.army >= 10) rank = "Герцог";
+    if (state.pop >= 3000 && state.popularity >= 75 && state.castle >= 2 && state.army >= 25) rank = "Принц";
+    if (state.pop >= 5000 && state.popularity >= 80 && state.castle >= 6 && state.army >= 200 && state.gold >= 100000) rank = "Король";
+    if (state.pop >= 10000 && state.popularity >= 90 && state.castle >= 8 && state.army >= 500 && state.gold >= 1000000)
+        rank = "Император";
+
+    document.getElementById("rank").textContent = rank;
+}
+
+
+
+/* ============================================================
+    POPUP СТРОИТЕЛЬСТВА
+============================================================ */
+
+const buildingInfo = {
+    farm:  { title: "Ферма",  icon: "icon_farm.png",  desc: "+500 еды в год", cost: 100 },
+    mine:  { title: "Шахта",  icon: "icon_mine.png",  desc: "+10 железа в год", cost: 200 },
+    market:{ title: "Рынок",  icon: "icon_market.png",desc: "Открывает торговлю", cost: 300 },
+    forge: { title: "Кузница",icon: "icon_forge.png", desc: "Позволяет ковать оружие", cost: 150 }
+};
+
+function openBuildPopup(type) {
+    state.pendingBuild = type;
+
+    const data = buildingInfo[type];
+
+    document.getElementById("popupIcon").src = "assets/icons/" + data.icon;
+    document.getElementById("popupTitle").textContent = data.title;
+    document.getElementById("popupDesc").textContent = data.desc;
+    document.getElementById("popupCost").textContent = "Стоимость: " + data.cost + " золота за единицу";
+
+    document.getElementById("buildPopup").classList.remove("hidden");
+}
+
+function closeBuildPopup() {
+    document.getElementById("buildPopup").classList.add("hidden");
+}
+
+function confirmBuild() {
+    const amount = parseInt(document.getElementById("popupAmount").value);
+    const type = state.pendingBuild;
+
+    if (!type) return;
+
+    const cost = buildingInfo[type].cost * amount;
+
+    if (state.gold < cost) {
+        alert("Недостаточно золота!");
         return;
     }
 
-    // каждая постройка уровня — 1 год работ
-    game.castleProgress++;
-    if (game.castleProgress >= 1) {
-        game.castleProgress = 0;
-        game.castleLevel++;
+    state.gold -= cost;
 
-        const img = document.getElementById("castleImage");
-        if (img) {
-            img.classList.add("castle-upgrade");
-            setTimeout(() => img.classList.remove("castle-upgrade"), 900);
-        }
+    for (let i = 0; i < amount; i++) {
+        if (type === "farm") state.farms++;
+        if (type === "mine") state.mines++;
+        if (type === "market") state.markets++;
+        if (type === "forge") state.forges++;
+
+        placeBuildingOnMap(type);
     }
 
-    saveGame();
+    closeBuildPopup();
     updateUI();
 }
 
-// ======================================================
-//                          АРМИЯ
-// ======================================================
+
+
+/* ============================================================
+    РАЗМЕЩЕНИЕ НА КАРТЕ
+============================================================ */
+
+function placeBuildingOnMap(type) {
+    for (let i = 0; i < 100; i++) {
+        if (!state.map[i].building) {
+            state.map[i].building = type;
+            return;
+        }
+    }
+}
+
+
+/* ============================================================
+    ЗАМКОВЫЕ УЛУЧШЕНИЯ
+============================================================ */
+
+function upgradeCastle() {
+    if (state.castle >= 8) {
+        alert("Замок уже полностью построен!");
+        return;
+    }
+
+    const cost = 500 * state.castle;
+
+    if (state.gold < cost) {
+        alert("Нужно золота: " + cost);
+        return;
+    }
+
+    state.gold -= cost;
+    state.castle++;
+
+    document.getElementById("castleImage").src = "assets/castle" + state.castle + ".png";
+    document.getElementById("castleImage").classList.add("castle-upgrade");
+
+    setTimeout(() => {
+        document.getElementById("castleImage").classList.remove("castle-upgrade");
+    }, 1000);
+
+    updateUI();
+}
+
+
+
+/* ============================================================
+    АРМИЯ
+============================================================ */
 
 function craftWeapon() {
-    if (game.iron < 1) return alert("Недостаточно железа.");
-    game.iron--;
-    game.weapons++;
-    saveGame();
+    if (state.iron < 1) return alert("Нет железа!");
+    state.iron--;
+    state.weapons++;
     updateUI();
 }
 
 function hireSoldier() {
-    if (game.weapons < 1) return alert("Нет оружия.");
-    if (game.population <= 200) return alert("Нельзя забирать последних жителей — минимум 200 должно оставаться.");
+    if (state.weapons < 1) return alert("Нет оружия!");
+    if (state.pop < 201) return alert("Нужно минимум 200 свободных жителей!");
 
-    game.weapons--;
-    game.population--;
-    game.army++;
+    state.weapons--;
+    state.army++;
+    state.pop--;
 
-    saveGame();
     updateUI();
 }
 
-// ======================================================
-//                         ТОРГОВЛЯ
-// ======================================================
+
+
+/* ============================================================
+    ТОРГОВЛЯ
+============================================================ */
 
 function sellFood() {
-    if (game.markets < 1) return alert("Нужен хотя бы 1 рынок.");
-    if (game.food < 100) return alert("Недостаточно еды для продажи.");
+    if (state.markets < 1) return alert("Нужен рынок!");
+    if (state.food < 50) return alert("Недостаточно еды!");
 
-    const pricePer100 = 50; // условная цена
-    game.food -= 100;
-    game.gold += pricePer100;
-    saveGame();
+    state.food -= 50;
+    state.gold += 50;
     updateUI();
 }
 
 function buyFood() {
-    if (game.markets < 1) return alert("Нужен хотя бы 1 рынок.");
-    const pricePer100 = 60;
-    if (game.gold < pricePer100) return alert("Недостаточно золота.");
+    if (state.markets < 1) return alert("Нужен рынок!");
+    if (state.gold < 50) return alert("Недостаточно золота!");
 
-    game.gold -= pricePer100;
-    game.food += 100;
-    saveGame();
+    state.gold -= 50;
+    state.food += 50;
     updateUI();
 }
 
 function sellIron() {
-    if (game.markets < 5) return alert("Нужно минимум 5 рынков для торговли железом.");
-    if (game.iron < 10) return alert("Недостаточно железа (нужно 10).");
+    if (state.markets < 5) return alert("Нужно 5 рынков!");
+    if (state.iron < 1) return alert("Нет железа!");
 
-    const pricePer10 = 80;
-    game.iron -= 10;
-    game.gold += pricePer10;
-    saveGame();
+    state.iron--;
+    state.gold += 120;
     updateUI();
 }
 
 function buyIron() {
-    if (game.markets < 5) return alert("Нужно минимум 5 рынков для торговли железом.");
-    const pricePer10 = 100;
-    if (game.gold < pricePer10) return alert("Недостаточно золота.");
+    if (state.markets < 5) return alert("Нужно 5 рынков!");
+    if (state.gold < 120) return alert("Недостаточно золота!");
 
-    game.gold -= pricePer10;
-    game.iron += 10;
-    saveGame();
+    state.gold -= 120;
+    state.iron++;
     updateUI();
 }
 
 function sellWeapons() {
-    if (game.markets < 10) return alert("Нужно минимум 10 рынков для торговли оружием.");
-    if (game.weapons < 5) return alert("Недостаточно оружия (нужно 5).");
+    if (state.markets < 10) return alert("Нужно 10 рынков!");
+    if (state.weapons < 1) return alert("Нет оружия!");
 
-    const pricePer5 = 200;
-    game.weapons -= 5;
-    game.gold += pricePer5;
-    saveGame();
+    state.weapons--;
+    state.gold += 300;
     updateUI();
 }
 
 function buyWeapons() {
-    if (game.markets < 10) return alert("Нужно минимум 10 рынков для торговли оружием.");
-    const pricePer5 = 250;
-    if (game.gold < pricePer5) return alert("Недостаточно золота.");
+    if (state.markets < 10) return alert("Нужно 10 рынков!");
+    if (state.gold < 300) return alert("Недостаточно золота!");
 
-    game.gold -= pricePer5;
-    game.weapons += 5;
-    saveGame();
+    state.gold -= 300;
+    state.weapons++;
     updateUI();
 }
 
-// ======================================================
-//                      КОНЕЦ ГОДА
-// ======================================================
+
+
+/* ============================================================
+    КОНЕЦ ГОДА
+============================================================ */
 
 function endTurn() {
-    // Обновляем параметры налогов/еды с инпутов
-    const taxInput = document.getElementById("taxRate");
-    const foodInput = document.getElementById("foodRate");
-    if (taxInput) game.taxRate = Math.max(0, Math.min(100, Number(taxInput.value) || 0));
-    if (foodInput) game.foodRate = Math.max(0, Math.min(10, Number(foodInput.value) || 0));
+    state.year++;
 
-    let report = `Год ${game.year} → ${game.year + 1}\n\n`;
+    const taxRate = parseInt(document.getElementById("taxRate").value);
+    const foodRate = parseInt(document.getElementById("foodRate").value);
 
-    // Производство
-    const foodProduced = game.farms * 500;
-    const ironProduced = game.mines * 10;
+    let report = "Год " + state.year + ":\n\n";
 
-    game.food += foodProduced;
-    game.iron += ironProduced;
+    /* Налоги */
+    const taxIncome = Math.floor(state.pop * (taxRate / 100));
+    state.gold += taxIncome;
+    report += "Получено налогов: " + taxIncome + "\n";
 
-    report += `Произведено еды: +${foodProduced}\n`;
-    report += `Добыто железа: +${ironProduced}\n`;
+    /* Производство */
+    const foodGain = state.farms * 500;
+    const ironGain = state.mines * 10;
 
-    // Потребление еды
-    const foodNeed = Math.floor(game.population * game.foodRate);
-    if (foodNeed > 0) {
-        if (game.food >= foodNeed) {
-            game.food -= foodNeed;
-            report += `Съедено еды: ${foodNeed}\n`;
-            game.popularity += 2;
-            // прирост населения
-            const growth = Math.floor(game.population * 0.03);
-            game.population += growth;
-            report += `Рождение и иммиграция: +${growth} жителей\n`;
-        } else {
-            report += `Еды не хватило! Не хватило ${foodNeed - game.food} порций.\n`;
-            game.food = 0;
-            game.popularity -= 5;
-            const loss = Math.floor(game.population * 0.05);
-            game.population = Math.max(0, game.population - loss);
-            report += `Голод и миграция: -${loss} жителей\n`;
-        }
+    state.food += foodGain;
+    state.iron += ironGain;
+
+    report += "Фермы дали еды: " + foodGain + "\n";
+    report += "Шахты дали железа: " + ironGain + "\n";
+
+    /* Расход еды */
+    const foodNeeded = state.pop * foodRate;
+    state.food -= foodNeeded;
+
+    if (state.food < 0) {
+        state.popularity -= 10;
+        state.pop += Math.floor(state.food / 50);
+        state.food = 0;
+        report += "Не хватило еды! Популярность ↓\n";
     }
 
-    // Налоги
-    const taxIncome = Math.floor(game.population * (game.taxRate / 100));
-    game.gold += taxIncome;
-    report += `Налоги: +${taxIncome} золота\n`;
+    /* Рост населения */
+    const growth = Math.floor((state.popularity / 100) * 20);
+    state.pop += growth;
+    report += "Прирост населения: " + growth + "\n";
 
-    // Популярность от налогов
-    if (game.taxRate <= 20) game.popularity += 2;
-    else if (game.taxRate >= 50) game.popularity -= 3;
+    /* Популярность */
+    if (taxRate < 20) state.popularity += 2;
+    if (taxRate > 50) state.popularity -= 3;
 
-    // Ограничения
-    if (game.popularity < 0) game.popularity = 0;
-    if (game.popularity > 100) game.popularity = 100;
+    if (state.popularity < 0) state.popularity = 0;
+    if (state.popularity > 100) state.popularity = 100;
 
-    // Обновляем титул
-    updateRank();
-
-    // Переход года
-    game.year++;
-
-    // Проверка победы/поражения
-    const currentRank = ranks[game.rankIndex].name;
-    if (
-        currentRank === "Император" &&
-        game.population >= 10000 &&
-        game.popularity >= 90 &&
-        game.castleLevel >= 8 &&
-        game.army >= 500 &&
-        game.gold >= 1000000
-    ) {
-        report += `\nВы стали Императором и выполнили условия победы!`;
-        game.lastReport = report;
-        saveGame();
-        updateUI();
-        showReport(report);
-        setTimeout(() => {
-            alert("🎉 Победа! Вы стали Императором.");
-            resetGame();
-        }, 100);
+    /* Конец игры */
+    if (state.year >= 1500) {
+        alert("Тёмный Император вернулся. Трон не занят. Игра начинается заново.");
+        localStorage.removeItem("yoniumGame");
+        location.reload();
         return;
     }
 
-    if (game.year >= 1500 && currentRank !== "Император") {
-        report += `\nТёмный Император вернулся... Вы не успели занять трон.`;
-        game.lastReport = report;
-        saveGame();
-        updateUI();
-        showReport(report);
-        setTimeout(() => {
-            alert("💀 Поражение. Вы не успели стать Императором.");
-            resetGame();
-        }, 100);
-        return;
-    }
-
-    game.lastReport = report;
-    saveGame();
     updateUI();
-    showReport(report);
-}
 
-// ======================================================
-//                     ОТЧЁТ ЗА ГОД
-// ======================================================
-
-function showReport(text) {
-    const panel = document.getElementById("reportPanel");
-    const textEl = document.getElementById("reportText");
-    if (!panel || !textEl) return;
-    textEl.textContent = text;
-    panel.classList.remove("hidden");
+    document.getElementById("reportText").textContent = report;
+    document.getElementById("reportPanel").classList.remove("hidden");
 }
 
 function closeReport() {
-    const panel = document.getElementById("reportPanel");
-    if (!panel) return;
-    panel.classList.add("hidden");
+    document.getElementById("reportPanel").classList.add("hidden");
 }
 
-// ======================================================
-//                      СБРОС ИГРЫ
-// ======================================================
 
-function resetGame() {
-    game = createInitialGameState();
-    saveGame();
-    updateUI();
-}
 
-// ======================================================
-//                         СТАРТ
-// ======================================================
+/* ============================================================
+    СТАРТ ИГРЫ
+============================================================ */
 
-(function init() {
-    game = loadGame() || createInitialGameState();
-    updateRank();
-    updateUI();
-})();
-
+generateMap();
+updateUI();
