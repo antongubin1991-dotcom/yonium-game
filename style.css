@@ -134,11 +134,11 @@ h2 {
 }
 
 /* стиль иконок в Diablo-стиле */
-.icon-farm      { background-image: url('assets/icon_farm.png'); }
-.icon-mine      { background-image: url('assets/icon_mine.png'); }
-.icon-market    { background-image: url('assets/icon_market.png'); }
-.icon-forge     { background-image: url('assets/icon_forge.png'); }
-.icon-castle    { background-image: url('assets/icon_castle.png'); }
+.icon-farm      { background-image: url('assets/icons/icon_farm.png'); }
+.icon-mine      { background-image: url('assets/icons/icon_mine.png'); }
+.icon-market    { background-image: url('assets/icons/icon_market.png'); }
+.icon-forge     { background-image: url('assets/icons/icon_forge.png'); }
+.icon-castle    { background-image: url('assets/icons/icon_castle.png'); }
 
 /* ============================================= */
 /*                ОСНОВНОЙ КОНТЕЙНЕР              */
@@ -325,5 +325,6 @@ h1, h2, h3 {
     pointer-events: none;
     z-index: -1;
 }
+
 
 
