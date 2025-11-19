@@ -110,7 +110,7 @@ function updateUI() {
     document.getElementById("castle").innerText = game.castleLevel;
 
     updateRank();
-    if (document.getElementById("advisor")) updateAdvisor();
+    updateAdvisor();
     renderMap();
 }
 
@@ -371,4 +371,5 @@ loadGame();
 if (game.map.length === 0) generateMap();
 updateUI();
 renderMap();
+
 
