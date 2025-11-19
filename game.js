@@ -82,6 +82,8 @@ function updateUI() {
 
     updateAdvisor();
     updateCastleImage();
+    updateMiniMap();
+
 }
 
 
@@ -462,10 +464,54 @@ function checkRank() {
         }
     }
 }
+function updateMiniMap() {
+    const map = document.getElementById("mapGrid");
+    if (!map) return;
 
+    map.innerHTML = "";
+
+    const gridSize = 100; // 10×10 клеток
+    const cells = Array(gridSize).fill(null);
+
+    // размещение зданий в случайных фиксированных клетках
+    function placeBuildings(count, className) {
+        for (let i = 0; i < count; i++) {
+            let pos = Math.floor(Math.random() * gridSize);
+
+            // поиск свободной клетки
+            while (cells[pos] !== null) {
+                pos = Math.floor(Math.random() * gridSize);
+            }
+            cells[pos] = className;
+        }
+    }
+
+    placeBuildings(game.farms, "icon-farm");
+    placeBuildings(game.mines, "icon-mine");
+    placeBuildings(game.markets, "icon-market");
+    placeBuildings(game.forges, "icon-forge");
+
+    // замок всегда по центру
+    cells[44] = "icon-castle";
+
+    // создаём DOM
+    cells.forEach(type => {
+        const div = document.createElement("div");
+        div.classList.add("mapCell");
+
+        if (type) {
+            const icon = document.createElement("div");
+            icon.classList.add("mapIcon", type);
+            div.appendChild(icon);
+        }
+
+        map.appendChild(div);
+    });
+}
 
 // ======================================================
 //                 СТАРТ
 // ======================================================
 updateUI();
+
 
