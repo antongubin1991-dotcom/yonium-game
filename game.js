@@ -270,6 +270,18 @@ function buyWeapons() { if (game.gold >= 200) game.gold -= 200, game.weapons += 
 /* ============================= */
 
 function endTurn() {
+    let report = "";
+report += `Год ${year} завершён.\n`;
+report += `Жители: ${population}\n`;
+report += `Еда: ${food}\n`;
+report += `Золото: ${gold}\n`;
+report += `Железо: ${iron}\n`;
+report += `Оружие: ${weapons}\n`;
+report += `Солдаты: ${army}\n`;
+report += `Популярность: ${popularity}%\n`;
+
+showReport(report);
+
     game.year++;
 
     // food consumption
@@ -313,19 +325,12 @@ function endTurn() {
 /*           REPORT POPUP        */
 /* ============================= */
 
-function showReport() {
-    const report = `
-Год: ${game.year}
-Налоги: +${Math.floor(game.pop * (game.taxRate/100))}
-Фермы дали еды: +${game.farms * 500}
-Шахты добыли железо: +${game.mines * 10}
-Популяция: ${game.pop}
-Популярность: ${game.popularity}
-Армия: ${game.army}
-`;
+function showReport(text) {
+    const panel = document.getElementById("reportPanel");
+    const box = document.getElementById("reportText");
 
-    document.getElementById("reportText").innerText = report;
-    document.getElementById("reportPanel").classList.remove("hidden");
+    box.textContent = text;
+    panel.classList.remove("hidden");
 }
 
 function closeReport() {
@@ -341,3 +346,4 @@ loadGame();
 if (!game.map.length) generateMap();
 updateUI();
 renderMap();
+
