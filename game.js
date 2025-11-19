@@ -3,7 +3,12 @@
 // ======================================================
 
 const STORAGE_KEY = "yonium_game_state";
-
+const terrainTypes = {
+    grass: "terrain-grass",
+    forest: "terrain-forest",
+    water: "terrain-water",
+    road: "terrain-road"
+};
 function createInitialGameState() {
     return {
         year: 1450,
@@ -153,18 +158,39 @@ function updateMiniMap() {
 
     map.innerHTML = "";
 
-    const gridSize = 100; // 10×10
-    const cells = new Array(gridSize).fill(null);
+    const size = 10;        // 10×10
+    const cells = [];
 
+    // === 1. Генерация ландшафта ===
+    for (let i = 0; i < size * size; i++) {
+        let r = Math.random();
+        let type;
+
+        if (r < 0.10) type = terrainTypes.water;        // 10% вода
+        else if (r < 0.40) type = terrainTypes.forest;  // 30% лес
+        else type = terrainTypes.grass;                 // 60% трава
+
+        cells.push({ terrain: type, building: null });
+    }
+
+    // === 2. Генерация дорог в стиле Diablo: диагональные + хаотичные ===
+    for (let y = 0; y < size; y++) {
+        let index = y * size + Math.floor(size * 0.5) + (Math.random() > 0.5 ? 1 : -1);
+        if (cells[index]) cells[index].terrain = terrainTypes.road;
+    }
+
+    // === 3. Размещение зданий ===
     function place(count, cls) {
-        for (let i = 0; i < count && i < gridSize; i++) {
-            let pos = Math.floor(Math.random() * gridSize);
+        for (let i = 0; i < count; i++) {
+            let pos = Math.floor(Math.random() * size * size);
             let attempts = 0;
-            while (cells[pos] !== null && attempts < 50) {
-                pos = Math.floor(Math.random() * gridSize);
+
+            while (cells[pos].building !== null && attempts < 40) {
+                pos = Math.floor(Math.random() * size * size);
                 attempts++;
             }
-            if (cells[pos] === null) cells[pos] = cls;
+
+            cells[pos].building = cls;
         }
     }
 
@@ -173,17 +199,21 @@ function updateMiniMap() {
     place(game.markets, "icon-market");
     place(game.forges, "icon-forge");
 
-    // замок примерно в центре
-    cells[55] = "icon-castle";
+    // === 4. Замок по центру ===
+    const castlePos = 55;
+    cells[castlePos].building = "icon-castle";
 
-    cells.forEach(type => {
+    // === 5. Рендер ===
+    cells.forEach(c => {
         const cell = document.createElement("div");
-        cell.classList.add("mapCell");
-        if (type) {
+        cell.classList.add("mapCell", c.terrain);
+
+        if (c.building) {
             const icon = document.createElement("div");
-            icon.classList.add("mapIcon", type);
+            icon.classList.add("mapIcon", c.building);
             cell.appendChild(icon);
         }
+
         map.appendChild(cell);
     });
 }
@@ -500,3 +530,4 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
