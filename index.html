@@ -4,25 +4,29 @@
     <meta charset="UTF-8">
     <title>Йониум — Империя Тьмы</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- Фавикон (чтобы не было 404) -->
+    <link rel="icon" href="assets/icons/icon_castle.png">
 </head>
 
 <body>
 
-<!-- ======= ВЕРХНИЙ БАР ======= -->
+<!-- ===================== HEADER ===================== -->
 <div id="topBar">
-    <h1>Йониум — Империя Тьмы</h1>
+    <h1>ЙОНИУМ</h1>
     <h2 id="yearLabel">Год: 1450</h2>
 </div>
 
+<!-- ===================== MAIN LAYOUT ===================== -->
 <div id="layout">
 
-    <!-- ======= МИНИ-КАРТА ======= -->
+    <!-- ===== LEFT: MINI MAP ===== -->
     <div id="leftPanel" class="panel">
         <h3>Поселение</h3>
         <div id="mapGrid"></div>
     </div>
 
-    <!-- ======= СТРОИТЕЛЬСТВО ======= -->
+    <!-- ===== CENTER: BUILDINGS ===== -->
     <div id="centerPanel" class="panel">
         <h3>Строительство</h3>
 
@@ -45,9 +49,14 @@
         <button onclick="upgradeCastle()">
             <img src="assets/icons/icon_castle.png"> Улучшить замок
         </button>
+
+        <hr>
+
+        <button onclick="craftWeapon()">Ковать оружие</button>
+        <button onclick="hireSoldier()">Нанять солдата</button>
     </div>
 
-    <!-- ======= СТАТИСТИКА ======= -->
+    <!-- ===== RIGHT: STATS ===== -->
     <div id="rightPanel" class="panel">
         <h3>Статистика</h3>
 
@@ -89,16 +98,30 @@
 
 </div>
 
-<!-- ======= КНОПКА ГОДА ======= -->
+<!-- ===================== NEXT YEAR BUTTON ===================== -->
 <div id="yearButtonWrap">
     <button id="endTurnButton" onclick="endTurn()">Следующий год</button>
 </div>
 
-<!-- ======= ПОПАП ДЛЯ СТРОИТЕЛЬСТВА ======= -->
+<!-- ===================== ADVISOR ===================== -->
+<div id="advisorPanel" class="panel" style="
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 260px;
+    z-index: 50;
+">
+    <h3>Советник</h3>
+    <pre id="advisor">Здесь будут подсказки советника…</pre>
+</div>
+
+<!-- ===================== BUILD POPUP ===================== -->
 <div id="buildPopup" class="popup hidden">
     <div class="popupBox">
         <h3 id="buildTitle"></h3>
+
         <img id="buildIcon" class="buildIcon">
+
         <p id="buildDesc"></p>
 
         <label>Количество:
@@ -110,9 +133,9 @@
     </div>
 </div>
 
-<!-- ======= ОТЧЁТ ЗА ГОД ======= -->
-<div id="reportPanel" class="hidden">
-    <div id="reportBox">
+<!-- ===================== YEAR REPORT POPUP ===================== -->
+<div id="reportPanel" class="popup hidden">
+    <div id="reportBox" class="popupBox">
         <h3>Отчёт за год</h3>
         <pre id="reportText"></pre>
         <button onclick="closeReport()">Закрыть</button>
@@ -120,17 +143,6 @@
 </div>
 
 <script src="game.js"></script>
-    <!-- ======= СОВЕТНИК ======= -->
-<div id="advisorPanel" class="panel" style="
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 280px;
-    z-index: 30;
-">
-    <h3>Советник</h3>
-    <pre id="advisor">Подсказки будут здесь...</pre>
-</div>
+
 </body>
 </html>
-
