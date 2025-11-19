@@ -11,21 +11,16 @@ body {
     font-family: Arial, sans-serif;
     overflow-x: hidden;
 
-    /* ФОН ИГРЫ */
     background: #0a0a0c url('background.jpg') center/cover no-repeat fixed;
-
-    /* ПАРАЛЛАКС */
     animation: parallaxMove 60s linear infinite;
 }
 
-/* МЕДЛЕННОЕ ДВИЖЕНИЕ ФОНА */
 @keyframes parallaxMove {
     0%   { background-position: 50% 50%; }
     50%  { background-position: 47% 52%; }
     100% { background-position: 50% 50%; }
 }
 
-/* ТЁМНАЯ ВИНЬЕТКА ПО КРАЯМ */
 body::after {
     content: "";
     position: fixed;
@@ -90,6 +85,11 @@ h2 {
             contrast(1.15);
 }
 
+
+/* ============================================= */
+/*                   МИНИ-КАРТА                   */
+/* ============================================= */
+
 #miniMap {
     grid-column: span 2;
     text-align: center;
@@ -110,7 +110,6 @@ h2 {
     box-shadow: 0 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.4);
 }
 
-/* клетка карты */
 .mapCell {
     width: 100%;
     height: 100%;
@@ -119,7 +118,6 @@ h2 {
     position: relative;
 }
 
-/* иконки зданий */
 .mapIcon {
     width: 100%;
     height: 100%;
@@ -133,12 +131,13 @@ h2 {
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* стиль иконок в Diablo-стиле */
+/* ✔ ИСПРАВЛЕННЫЕ ПУТИ К ИКОНКАМ */
 .icon-farm      { background-image: url('assets/icons/icon_farm.png'); }
 .icon-mine      { background-image: url('assets/icons/icon_mine.png'); }
 .icon-market    { background-image: url('assets/icons/icon_market.png'); }
 .icon-forge     { background-image: url('assets/icons/icon_forge.png'); }
 .icon-castle    { background-image: url('assets/icons/icon_castle.png'); }
+
 
 /* ============================================= */
 /*                ОСНОВНОЙ КОНТЕЙНЕР              */
@@ -265,10 +264,10 @@ button:hover {
 /*               ДЕКОРАТИВНЫЕ ЭФФЕКТЫ             */
 /* ============================================= */
 
-/* Тень под текстом */
 h1, h2, h3 {
     text-shadow: 0 0 8px rgba(0,0,0,0.9);
 }
+
 /* Огни в окнах */
 #castleView::after {
     content: "";
@@ -298,6 +297,7 @@ h1, h2, h3 {
     50%  { opacity: 0.45; transform: translate(-50%, -50%) scale(1.15); }
     100% { opacity: 0.20; transform: translate(-50%, -50%) scale(1); }
 }
+
 /* Эффект улучшения */
 .castle-upgrade {
     animation: castleUpgradeAnim 1s ease-out;
@@ -309,6 +309,7 @@ h1, h2, h3 {
     60%  { transform: scale(1.03) rotate(-1deg); }
     100% { filter: brightness(1) drop-shadow(0 0 0px transparent); transform: scale(1); }
 }
+
 /* Магическое послевкусие */
 .panel::before {
     content: "";
@@ -325,6 +326,3 @@ h1, h2, h3 {
     pointer-events: none;
     z-index: -1;
 }
-
-
-
