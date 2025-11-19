@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Империя – Экономическая стратегия</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Империя</h1>
+<h2 id="yearLabel">Год: 1450</h2>
+
+<div id="stats" class="panel">
+    <h3>Статистика</h3>
+    <table>
+        <tr><td>Жители:</td><td id="pop"></td></tr>
+        <tr><td>Еда:</td><td id="food"></td></tr>
+        <tr><td>Золото:</td><td id="gold"></td></tr>
+        <tr><td>Железо:</td><td id="iron"></td></tr>
+        <tr><td>Оружие:</td><td id="weapons"></td></tr>
+        <tr><td>Солдаты:</td><td id="army"></td></tr>
+        <tr><td>Популярность:</td><td id="popularity"></td></tr>
+        <tr><td>Замок (1–8):</td><td id="castle"></td></tr>
+        <tr><td>Титул:</td><td id="rank"></td></tr>
+    </table>
+</div>
+
+<div class="flex">
+    <div class="panel">
+        <h3>Строительство</h3>
+        <button onclick="build('farm')">Построить ферму (100 золота)</button><br>
+        <button onclick="build('mine')">Построить шахту (200 золота)</button><br>
+        <button onclick="build('market')">Построить рынок (300 золота)</button><br>
+        <button onclick="build('forge')">Построить кузницу (150 золота)</button><br>
+        <button onclick="upgradeCastle()">Улучшить замок (1 уровень = 1 год)</button>
+    </div>
+
+    <div class="panel">
+        <h3>Армия</h3>
+        <button onclick="craftWeapon()">Ковать оружие (1 железо → 1 оружие)</button><br>
+        <button onclick="hireSoldier()">Нанять солдата (1 оружие + 1 житель)</button>
+    </div>
+
+    <div class="panel">
+        <h3>Налоги и еда</h3>
+        <label>Налоги (0–100):<br>
+            <input id="taxRate" type="number" min="0" max="100" value="30">
+        </label><br><br>
+
+        <label>Еда на человека:<br>
+            <input id="foodRate" type="number" min="0" max="10" value="3">
+        </label>
+    </div>
+
+    <div class="panel">
+        <h3>Торговля</h3>
+        <button onclick="sellFood()">Продать еду</button><br>
+        <button onclick="buyFood()">Купить еду</button><br>
+        <button onclick="sellIron()">Продать железо</button><br>
+        <button onclick="buyIron()">Купить железо</button><br>
+        <button onclick="sellWeapons()">Продать оружие</button><br>
+        <button onclick="buyWeapons()">Купить оружие</button>
+    </div>
+
+    <div class="panel">
+        <h3>Советник</h3>
+        <div id="advisor"></div>
+    </div>
+</div>
+
+<div class="panel">
+    <h3>Отчёт</h3>
+    <pre id="report"></pre>
+</div>
+
+<button id="endTurnBtn" onclick="endTurn()">Закончить год</button>
+
+<script src="game.js"></script>
+</body>
+</html>
