@@ -5,31 +5,34 @@
     <title>Империя Тьмы</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- ВЕРХНИЙ БАР -->
+<!-- ==== ВЕРХНИЙ БАР ==== -->
 <div id="topBar">
     <h1>Империя Тьмы</h1>
     <h2 id="yearLabel">Год: 1450</h2>
 </div>
 
-<!-- ОСНОВНАЯ СЕТКА -->
+<!-- ==== ОСНОВНАЯ СЕТКА ==== -->
 <div id="mainLayout">
 
-    <!-- ===== ЛЕВАЯ КОЛОНКА ===== -->
-    <div class="panel">
+    <!-- ==== ЛЕВАЯ КОЛОНКА ==== -->
+    <div class="leftColumn">
 
-        <h3>Поселение</h3>
-        <div id="mapGrid"></div>
+        <div class="panel">
+            <h3>Поселение</h3>
+            <div id="mapGrid"></div>
+        </div>
 
-        <div id="advisorPanel" class="panel" style="margin-top:15px;">
+        <div id="advisorPanel" class="panel">
             <h3>Советник</h3>
-            <div id="advisorText"></div>
+            <pre id="advisorText"></pre>
         </div>
 
     </div>
 
-    <!-- ===== ЦЕНТРАЛЬНАЯ КОЛОНКА ===== -->
+    <!-- ==== ЦЕНТР ==== -->
     <div class="panel">
 
         <h3>Строительство</h3>
@@ -59,7 +62,7 @@
             <div class="build-icon icon-castle"></div>
         </button>
 
-        <h3 style="margin-top:25px;">Армия</h3>
+        <h3 style="margin-top: 25px;">Армия</h3>
 
         <button class="build-btn" onclick="craftWeapon()">
             Ковать оружие
@@ -71,17 +74,17 @@
             <div class="build-icon icon-castle"></div>
         </button>
 
-        <div style="margin-top:25px; text-align:center;">
+        <div style="text-align: center; margin-top: 25px;">
             <button id="nextYearBtn" onclick="endTurn()">Следующий год</button>
         </div>
 
     </div>
 
-    <!-- ===== ПРАВАЯ КОЛОНКА ===== -->
+    <!-- ==== ПРАВАЯ КОЛОНКА ==== -->
     <div class="panel">
 
         <h3>Статистика</h3>
-        <table>
+        <table class="statsTable">
             <tr><td>Жители:</td> <td id="pop"></td></tr>
             <tr><td>Еда:</td> <td id="food"></td></tr>
             <tr><td>Золото:</td> <td id="gold"></td></tr>
@@ -94,15 +97,11 @@
         </table>
 
         <h3 style="margin-top:20px;">Налоги и пайки</h3>
-        <div>
-            <label>Налоги (%): </label>
-            <input id="taxRate" type="number" min="0" max="100" value="30">
-        </div>
+        <label>Налоги (%):</label>
+        <input id="taxRate" type="number" value="30">
 
-        <div style="margin-top:10px;">
-            <label>Еда на человека: </label>
-            <input id="foodRate" type="number" min="0" max="10" value="3">
-        </div>
+        <label style="margin-top:10px;">Еда на человека:</label>
+        <input id="foodRate" type="number" value="3">
 
         <h3 style="margin-top:20px;">Торговля</h3>
 
@@ -137,14 +136,26 @@
         </button>
 
     </div>
+
 </div>
 
-<!-- ОТЧЁТ ЗА ГОД -->
+<!-- ==== POPUP ==== -->
+<div id="popup" class="hidden">
+    <div id="popupBox">
+        <img id="popupIcon">
+        <h3 id="popupTitle"></h3>
+        <p id="popupCost"></p>
+        <button onclick="confirmPopup()">Построить</button>
+        <button onclick="closePopup()">Отмена</button>
+    </div>
+</div>
+
+<!-- ==== ОТЧЁТ ==== -->
 <div id="reportPanel" class="hidden">
     <div id="reportBox">
         <h3>Отчёт за год</h3>
         <pre id="reportText"></pre>
-        <button id="nextYearBtn" onclick="closeReport()">Закрыть</button>
+        <button onclick="closeReport()">Закрыть</button>
     </div>
 </div>
 
