@@ -4,152 +4,150 @@
     <meta charset="UTF-8">
     <title>Империя Тьмы</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="assets/icons/icon_castle.png">
 </head>
-
 <body>
 
-<!-- ===================== TOP BAR ===================== -->
+<!-- ВЕРХНИЙ БАР -->
 <div id="topBar">
     <h1>Империя Тьмы</h1>
     <h2 id="yearLabel">Год: 1450</h2>
 </div>
 
-<!-- ===================== MAIN GRID ===================== -->
-<div id="mainGrid">
+<!-- ОСНОВНАЯ СЕТКА -->
+<div id="mainLayout">
 
-    <!-- ===== LEFT COLUMN ===== -->
-<div id="leftColumn">
+    <!-- ===== ЛЕВАЯ КОЛОНКА ===== -->
+    <div class="panel">
 
-    <!-- миникарта -->
-    <div id="miniMapPanel" class="panel">
         <h3>Поселение</h3>
         <div id="mapGrid"></div>
+
+        <div id="advisorPanel" class="panel" style="margin-top:15px;">
+            <h3>Советник</h3>
+            <div id="advisorText"></div>
+        </div>
+
     </div>
 
-    <!-- советник -->
-    <div id="advisorPanel" class="panel">
-        <h3>Советник</h3>
-        <pre id="advisor"></pre>
-    </div>
+    <!-- ===== ЦЕНТРАЛЬНАЯ КОЛОНКА ===== -->
+    <div class="panel">
 
-</div>
-
-    <!-- ===== CENTER: BUILDING ACTIONS ===== -->
-    <div id="buildPanel" class="panel">
         <h3>Строительство</h3>
+
         <button class="build-btn" onclick="build('farm')">
-    Построить ферму
-    <div class="build-icon icon-farm"></div>
-</button>
+            Построить ферму
+            <div class="build-icon icon-farm"></div>
+        </button>
 
-<button class="build-btn" onclick="build('mine')">
-    Построить шахту
-    <div class="build-icon icon-mine"></div>
-</button>
+        <button class="build-btn" onclick="build('mine')">
+            Построить шахту
+            <div class="build-icon icon-mine"></div>
+        </button>
 
-<button class="build-btn" onclick="build('market')">
-    Построить рынок
-    <div class="build-icon icon-market"></div>
-</button>
+        <button class="build-btn" onclick="build('market')">
+            Построить рынок
+            <div class="build-icon icon-market"></div>
+        </button>
 
-<button class="build-btn" onclick="build('forge')">
-    Построить кузницу
-    <div class="build-icon icon-forge"></div>
-</button>
+        <button class="build-btn" onclick="build('forge')">
+            Построить кузницу
+            <div class="build-icon icon-forge"></div>
+        </button>
 
-<button class="build-btn" onclick="upgradeCastle()">
-    Улучшить замок
-    <div class="build-icon icon-castle"></div>
-</button>
-        <hr>
+        <button class="build-btn" onclick="upgradeCastle()">
+            Улучшить замок
+            <div class="build-icon icon-castle"></div>
+        </button>
 
-        <button onclick="craftWeapon()">Ковать оружие</button>
-        <button onclick="hireSoldier()">Нанять солдата</button>
+        <h3 style="margin-top:25px;">Армия</h3>
+
+        <button class="build-btn" onclick="craftWeapon()">
+            Ковать оружие
+            <div class="build-icon icon-forge"></div>
+        </button>
+
+        <button class="build-btn" onclick="hireSoldier()">
+            Нанять солдата
+            <div class="build-icon icon-castle"></div>
+        </button>
+
+        <div style="margin-top:25px; text-align:center;">
+            <button id="nextYearBtn" onclick="endTurn()">Следующий год</button>
+        </div>
+
     </div>
 
-    <!-- ===== RIGHT: STATISTICS ===== -->
-    <div id="statsPanel" class="panel">
+    <!-- ===== ПРАВАЯ КОЛОНКА ===== -->
+    <div class="panel">
+
         <h3>Статистика</h3>
+        <table>
+            <tr><td>Жители:</td> <td id="pop"></td></tr>
+            <tr><td>Еда:</td> <td id="food"></td></tr>
+            <tr><td>Золото:</td> <td id="gold"></td></tr>
+            <tr><td>Железо:</td> <td id="iron"></td></tr>
+            <tr><td>Оружие:</td> <td id="weapons"></td></tr>
+            <tr><td>Солдаты:</td> <td id="army"></td></tr>
+            <tr><td>Популярность:</td> <td id="popularity"></td></tr>
+            <tr><td>Замок:</td> <td id="castle"></td></tr>
+            <tr><td>Титул:</td> <td id="rank"></td></tr>
+        </table>
 
-        <div class="statRow"><span>Жители:</span><span id="pop"></span></div>
-        <div class="statRow"><span>Еда:</span><span id="food"></span></div>
-        <div class="statRow"><span>Золото:</span><span id="gold"></span></div>
-        <div class="statRow"><span>Железо:</span><span id="iron"></span></div>
-        <div class="statRow"><span>Оружие:</span><span id="weapons"></span></div>
-        <div class="statRow"><span>Солдаты:</span><span id="army"></span></div>
-        <div class="statRow"><span>Популярность:</span><span id="popularity"></span></div>
-        <div class="statRow"><span>Замок:</span><span id="castle"></span></div>
-        <div class="statRow"><span>Титул:</span><span id="rank"></span></div>
-
-        <hr>
-
-        <h3>Налоги и пайки</h3>
-
-        <div class="inputRow">
-            <label>Налоги (%):</label>
+        <h3 style="margin-top:20px;">Налоги и пайки</h3>
+        <div>
+            <label>Налоги (%): </label>
             <input id="taxRate" type="number" min="0" max="100" value="30">
         </div>
 
-        <div class="inputRow">
-            <label>Еда на человека:</label>
+        <div style="margin-top:10px;">
+            <label>Еда на человека: </label>
             <input id="foodRate" type="number" min="0" max="10" value="3">
         </div>
 
-        <hr>
+        <h3 style="margin-top:20px;">Торговля</h3>
 
-        <h3>Торговля</h3>
-        <button onclick="sellFood()">Продать еду</button>
-        <button onclick="buyFood()">Купить еду</button>
-        <button onclick="sellIron()">Продать железо</button>
-        <button onclick="buyIron()">Купить железо</button>
-        <button onclick="sellWeapons()">Продать оружие</button>
-        <button onclick="buyWeapons()">Купить оружие</button>
-    </div>
+        <button class="build-btn" onclick="sellFood()">
+            Продать еду
+            <div class="build-icon icon-farm"></div>
+        </button>
 
-</div>
+        <button class="build-btn" onclick="buyFood()">
+            Купить еду
+            <div class="build-icon icon-farm"></div>
+        </button>
 
-<!-- ===== NEXT YEAR BUTTON ===== -->
-<div id="yearButtonWrap">
-    <button id="endTurnButton" onclick="endTurn()">Следующий год</button>
-</div>
+        <button class="build-btn" onclick="sellIron()">
+            Продать железо
+            <div class="build-icon icon-mine"></div>
+        </button>
 
-<!-- ===== ADVISOR ===== -->
-<div id="advisorPanel" class="panel">
-    <h3>Советник</h3>
-    <pre id="advisor">Советы появятся здесь…</pre>
-</div>
+        <button class="build-btn" onclick="buyIron()">
+            Купить железо
+            <div class="build-icon icon-mine"></div>
+        </button>
 
-<!-- ===== BUILD POPUP ===== -->
-<div id="buildPopup" class="popup hidden">
-    <div class="popupBox">
-        <h3 id="buildTitle"></h3>
-        <img id="buildIcon" class="buildIcon">
-        <p id="buildDesc"></p>
+        <button class="build-btn" onclick="sellWeapons()">
+            Продать оружие
+            <div class="build-icon icon-forge"></div>
+        </button>
 
-        <label>Количество:
-            <input id="buildAmount" type="number" min="1" value="1">
-        </label>
+        <button class="build-btn" onclick="buyWeapons()">
+            Купить оружие
+            <div class="build-icon icon-forge"></div>
+        </button>
 
-        <button onclick="confirmBuild()">Построить</button>
-        <button onclick="closeBuildPopup()">Отмена</button>
     </div>
 </div>
 
-<!-- ===== YEAR REPORT POPUP ===== -->
-<div id="reportPanel" class="popup hidden">
-    <div id="reportBox" class="popupBox">
+<!-- ОТЧЁТ ЗА ГОД -->
+<div id="reportPanel" class="hidden">
+    <div id="reportBox">
         <h3>Отчёт за год</h3>
         <pre id="reportText"></pre>
-        <button onclick="closeReport()">Закрыть</button>
+        <button id="nextYearBtn" onclick="closeReport()">Закрыть</button>
     </div>
 </div>
 
 <script src="game.js"></script>
-
 </body>
 </html>
-
-
-
-
