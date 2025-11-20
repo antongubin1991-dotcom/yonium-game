@@ -283,10 +283,13 @@ function buyWeapons()  { if (state.gold >= 10) { state.weapons++; state.gold -= 
 function endTurn() {
     let report = "";
 
+    /* =============================
+       ОСНОВНАЯ ЭКОНОМИКА
+    ============================== */
+
     // доходы
     let taxIncome = Math.floor(state.pop * (state.taxRate / 100));
     state.gold += taxIncome;
-
     report += "Налоги: +" + taxIncome + " золота\n";
 
     // фермы
@@ -307,7 +310,7 @@ function endTurn() {
     if (state.food < 0) {
         state.food = 0;
         state.popularity -= 10;
-        report += "ГОЛОД! Популярность -10\n";
+        report += "Голод! Популярность -10\n";
     } else {
         state.popularity += 2;
     }
@@ -319,21 +322,97 @@ function endTurn() {
         report += "Рождаемость: +" + growth + " жителей\n";
     }
 
-    // обновляем год
+
+    /* =============================
+       СЛУЧАЙНЫЕ СОБЫТИЯ
+    ============================== */
+
+    // 1) Разбойники (10%)
+    if (Math.random() < 0.10) {
+        if (state.army > 50) {
+            state.popularity += 5;
+            report += "Разбойники напали, но армия их отбила! Популярность +5\n";
+        } else {
+            let stolen = Math.floor(state.food * 0.2);
+            state.food -= stolen;
+            state.popularity -= 8;
+            report += "Разбойники ограбили деревню! Потеряно " + stolen + " еды, популярность -8\n";
+        }
+    }
+
+    // 2) Эпидемия (5%)
+    if (Math.random() < 0.05) {
+        let death = Math.floor(state.pop * 0.07);
+        state.pop -= death;
+        state.popularity -= 5;
+        report += "Эпидемия Забвения унесла " + death + " жителей. Популярность -5\n";
+    }
+
+    // 3) Пожар (3%)
+    if (Math.random() < 0.03) {
+        if (state.farms > 0) {
+            state.farms--;
+            report += "Пожар уничтожил одну ферму!\n";
+        } else if (state.markets > 0) {
+            state.markets--;
+            report += "Пожар уничтожил один рынок!\n";
+        }
+    }
+
+    // 4) Мистическое событие (3%)
+    if (Math.random() < 0.03) {
+        if (Math.random() < 0.5) {
+            state.popularity += 10;
+            report += "Странствующий мудрец благословил ваш народ. Популярность +10\n";
+        } else {
+            state.popularity -= 15;
+            report += "Темный дух посетил ваши земли... Популярность -15\n";
+        }
+    }
+
+    // 5) Экономическое чудо (4%)
+    if (Math.random() < 0.04) {
+        let bonus = Math.floor(50 + Math.random() * 150);
+        state.gold += bonus;
+        report += "Богатый купец пожертвовал вам " + bonus + " золота\n";
+    }
+
+    // 6) Миграция (прибытие / уход)
+    if (state.popularity > 70) {
+        let migrants = Math.floor(state.pop * 0.05);
+        state.pop += migrants;
+        report += "В империю прибыли " + migrants + " переселенцев.\n";
+    }
+
+    if (state.popularity < 30) {
+        let flee = Math.floor(state.pop * 0.03);
+        state.pop -= flee;
+        report += "Часть жителей покинула империю (" + flee + ").\n";
+    }
+
+    // 7) Проклятие Тёмного Императора — каждые 10 лет
+    if (state.year % 10 === 0) {
+        state.popularity -= 10;
+        report += "Тёмный Император насылает проклятие! Популярность -10\n";
+    }
+
+
+    /* =============================
+       ФИНАЛ ГОДА
+    ============================== */
+
     state.year++;
 
-    // показываем отчёт
+    // Добавляем ранг в отчёт
+    report += "\nТекущий титул: " + getRank() + "\n";
+
+    // показать отчёт
     document.getElementById("reportText").innerText = report;
     document.getElementById("reportPanel").classList.remove("hidden");
 
     updateUI();
     saveGame();
 }
-
-function closeReport() {
-    document.getElementById("reportPanel").classList.add("hidden");
-}
-
 
 /* ============================================================
    СТАРТ ИГРЫ
@@ -343,4 +422,5 @@ loadGame();
 initMap();
 updateUI();
 renderMap();
+
 
