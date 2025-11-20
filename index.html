@@ -38,27 +38,30 @@
     <!-- ===== CENTER: BUILDING ACTIONS ===== -->
     <div id="buildPanel" class="panel">
         <h3>Строительство</h3>
+        <button class="build-btn" onclick="build('farm')">
+    Построить ферму
+    <div class="build-icon icon-farm"></div>
+</button>
 
-        <button onclick="openBuildPopup('farm')">
-            <img src="assets/icons/icon_farm.png"> Построить ферму
-        </button>
+<button class="build-btn" onclick="build('mine')">
+    Построить шахту
+    <div class="build-icon icon-mine"></div>
+</button>
 
-        <button onclick="openBuildPopup('mine')">
-            <img src="assets/icons/icon_mine.png"> Построить шахту
-        </button>
+<button class="build-btn" onclick="build('market')">
+    Построить рынок
+    <div class="build-icon icon-market"></div>
+</button>
 
-        <button onclick="openBuildPopup('market')">
-            <img src="assets/icons/icon_market.png"> Построить рынок
-        </button>
+<button class="build-btn" onclick="build('forge')">
+    Построить кузницу
+    <div class="build-icon icon-forge"></div>
+</button>
 
-        <button onclick="openBuildPopup('forge')">
-            <img src="assets/icons/icon_forge.png"> Построить кузницу
-        </button>
-
-        <button onclick="upgradeCastle()">
-            <img src="assets/icons/icon_castle.png"> Улучшить замок
-        </button>
-
+<button class="build-btn" onclick="upgradeCastle()">
+    Улучшить замок
+    <div class="build-icon icon-castle"></div>
+</button>
         <hr>
 
         <button onclick="craftWeapon()">Ковать оружие</button>
@@ -146,6 +149,7 @@
 
 </body>
 </html>
+
 
 
 
