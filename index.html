@@ -34,34 +34,33 @@
 
     <!-- ==== ЦЕНТР ==== -->
     <div class="panel">
+    <h3>Строительство</h3>
 
-        <h3>Строительство</h3>
+    <button class="build-btn" onclick="build('farm')">
+        Построить ферму
+        <div class="build-icon icon-farm"></div>
+    </button>
 
-        <button class="build-btn" onclick="build('farm')">
-            Построить ферму
-            <div class="build-icon icon-farm"></div>
-        </button>
+    <button class="build-btn" onclick="build('mine')">
+        Построить шахту
+        <div class="build-icon icon-mine"></div>
+    </button>
 
-        <button class="build-btn" onclick="build('mine')">
-            Построить шахту
-            <div class="build-icon icon-mine"></div>
-        </button>
+    <button class="build-btn" onclick="build('market')">
+        Построить рынок
+        <div class="build-icon icon-market"></div>
+    </button>
 
-        <button class="build-btn" onclick="build('market')">
-            Построить рынок
-            <div class="build-icon icon-market"></div>
-        </button>
+    <button class="build-btn" onclick="build('forge')">
+        Построить кузницу
+        <div class="build-icon icon-forge"></div>
+    </button>
 
-        <button class="build-btn" onclick="build('forge')">
-            Построить кузницу
-            <div class="build-icon icon-forge"></div>
-        </button>
-
-        <button class="build-btn" onclick="upgradeCastle()">
-            Улучшить замок
-            <div class="build-icon icon-castle"></div>
-        </button>
-
+    <button class="build-btn" onclick="upgradeCastle()">
+        Улучшить замок
+        <div class="build-icon icon-castle"></div>
+    </button>
+</div>
         <h3 style="margin-top: 25px;">Армия</h3>
 
         <button class="build-btn" onclick="craftWeapon()">
@@ -162,3 +161,4 @@
 <script src="game.js"></script>
 </body>
 </html>
+
