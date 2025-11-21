@@ -452,6 +452,12 @@ function resetGame() {
 // ======================================================
 
 (function init() {
-  game = loadGame() || createInitialGameState();
-  updateUI();
+    game = loadGame() || createInitialGameState();
+
+    // На всякий случай всегда прячем окно отчёта при загрузке
+    const panel = document.getElementById("reportPanel");
+    if (panel) panel.classList.add("hidden");
+
+    updateRank();
+    updateUI();
 })();
