@@ -153,6 +153,9 @@ function updateStatsUI() {
   setText("popularity", game.popularity + " / 100");
   setText("castle",     "Уровень " + game.castleLevel);
   setText("rank",       game.rankName || "");
+
+  // НОВОЕ:
+  setText("inflation", (game.inflationRate || 0).toFixed(1) + " %");
 }
 
 function updateAdvisor() {
@@ -173,7 +176,7 @@ function updateAdvisor() {
     taxRate,
     year
   } = game;
-
+  const inflation = game.inflationRate || 0;
   let msg = "";
   const yearlyFoodNeed = Math.round(population * game.foodRate);
 
@@ -196,7 +199,13 @@ function updateAdvisor() {
   } else if (gold < 100 && taxRate > 20) {
     msg = "Налоги высокие, золота мало. Похоже, кто-то по дороге до казны очень любит считать деньги… и перестаёт считать на мешок раньше.";
   }
+  // --- ИНФЛЯЦИЯ ---
 
+  else if (inflation > 15) {
+    msg = "Инфляция " + inflation.toFixed(1) + "%, господин. Золото обесценивается быстрее, чем ваша репутация после ещё одного повышения налогов. Вложения в здания и армию сейчас выгоднее, чем хранить сундуки.";
+  } else if (inflation > 7) {
+    msg = "Цены растут на " + inflation.toFixed(1) + "% в год. Если продолжите копить золото в подвалах, скоро на него можно будет купить только экскурсию по подвалу.";
+  }
   // --- АРМИЯ И ЗАЩИТА ---
 
   else if (army === 0 && (castleLevel > 0 || year > 1455)) {
@@ -261,22 +270,29 @@ function closeReport() {
 // ======================================================
 
 function getBuildingCost(type) {
+  const pi = game.priceIndex || 1;
+  let base = 0;
+
   switch (type) {
     case "farm":
-      // Базово 100, дальше дорожает на 50 за каждую уже построенную ферму
-      return 100 + game.farms * 50;
+      // базовая стоимость + удорожание за каждую ферму
+      base = 100 + game.farms * 50;
+      break;
     case "mine":
-      // Базово 200, плюс 75 за каждую шахту
-      return 200 + game.mines * 75;
+      base = 200 + game.mines * 75;
+      break;
     case "market":
-      // Базово 300, плюс 100 за каждый рынок
-      return 300 + game.markets * 100;
+      base = 300 + game.markets * 100;
+      break;
     case "forge":
-      // Базово 150, плюс 60 за каждую кузницу
-      return 150 + game.forges * 60;
+      base = 150 + game.forges * 60;
+      break;
     default:
       return Infinity;
   }
+
+  // умножаем на уровень цен
+  return Math.round(base * pi);
 }
 // ======================================================
 //                     ДЕЙСТВИЯ
@@ -323,11 +339,13 @@ function build(type) {
 
 function upgradeCastle() {
   const nextLevel = game.castleLevel + 1;
-  const cost = 500 * nextLevel;
+  const cost = Math.round(500 * nextLevel * (game.priceIndex || 1)); // было: 500 * nextLevel
 
   if (game.gold < cost) {
     return alert("Недостаточно золота. Нужно " + cost + " золота для улучшения замка.");
   }
+  ...
+}
 
   game.gold -= cost;
   game.castleLevel = nextLevel;
@@ -354,12 +372,15 @@ function hireSoldier() {
   if (game.weapons < 1) {
     return alert("Недостаточно оружия для найма солдата.");
   }
-  if (game.gold < 50) {
-    return alert("Нужно 50 золота для найма солдата.");
+
+  const soldierCost = Math.round(50 * (game.priceIndex || 1)); // было жёстко 50
+
+  if (game.gold < soldierCost) {
+    return alert("Нужно " + soldierCost + " золота для найма солдата.");
   }
 
   game.weapons -= 1;
-  game.gold -= 50;
+  game.gold -= soldierCost;
   game.army += 1;
   game.popularity = clamp(game.popularity - 1, 0, 100);
 
@@ -462,7 +483,7 @@ function endTurn() {
   report.push("Собрано налогов и пошлин: +" + fmt(taxIncome) + " золота");
 
   // Содержание армии
-  const armyCost = game.army * 2;
+    const armyCost = Math.round(game.army * 2 * (game.priceIndex || 1));
   let deserters = 0;
   if (armyCost > 0) {
     if (game.gold >= armyCost) {
@@ -533,7 +554,7 @@ function endTurn() {
     game.popularity -= 5;
   }
 
-  if (deserters > 0) {
+    if (deserters > 0) {
     game.popularity -= 4;
   }
   // Случайные события года (чума, набеги, урожай и т.п.)
@@ -541,6 +562,31 @@ function endTurn() {
   // Бонус за развитие замка
   game.popularity += game.castleLevel;
   game.popularity = clamp(game.popularity, 0, 100);
+
+  // --- ИНФЛЯЦИЯ ---
+  let inflation = 0.01; // базовая инфляция ~1% в год
+
+  // Много золота в казне → разгон инфляции
+  if (game.gold > 2000) inflation += 0.01;
+  if (game.gold > 5000) inflation += 0.02;
+
+  // Высокие налоги тоже подогревают цены
+  if (game.taxRate >= 20) inflation += 0.01;
+
+  // Много рынков — активная торговля → чуть больше инфляции
+  if (game.markets >= 3) inflation += 0.01;
+
+  // Ограничим безумие
+  inflation = clamp(inflation, 0, 0.20); // максимум 20% в год
+
+  // Обновляем уровень цен и инфляцию в состоянии
+  game.priceIndex *= 1 + inflation;
+  game.inflationRate = Math.round(inflation * 1000) / 10; // например, 0.053 → 5.3 (%)
+
+  const totalInflation = Math.round((game.priceIndex - 1) * 100);
+
+  report.push("Инфляция за год: " + game.inflationRate.toFixed(1) + " %");
+  report.push("Рост цен с начала правления: " + (totalInflation >= 0 ? "+" : "") + totalInflation + " %");
 
   // Итоговые строки в отчёте
   const popDiff = game.population - startPop;
@@ -635,6 +681,7 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
 
 
