@@ -1,108 +1,98 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Империя Тьмы — Экономическая Стратегия</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Империя Тьмы — Экономическая Стратегия</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- ==== ВЕРХНИЙ БАР ==== -->
-<div id="topBar">
+  <!-- ==== ВЕРХНИЙ БАР ==== -->
+  <div id="topBar">
     <h1>Империя Тьмы</h1>
     <h2 id="yearLabel">Год: 1450</h2>
-</div>
-<!-- ==== ОСНОВНОЙ БЛОК ==== -->
-<div id="mainContainer">
+  </div>
+
+  <!-- ==== ОСНОВНОЙ КОНТЕЙНЕР ==== -->
+  <div id="mainContainer">
     <!-- ===== СТАТИСТИКА ===== -->
     <div class="panel">
-        <h3>Статистика</h3>
-        <table>
-            <tr><td>Жители:</td><td id="pop"></td></tr>
-            <tr><td>Еда:</td><td id="food"></td></tr>
-            <tr><td>Золото:</td><td id="gold"></td></tr>
-            <tr><td>Железо:</td><td id="iron"></td></tr>
-            <tr><td>Оружие:</td><td id="weapons"></td></tr>
-            <tr><td>Солдаты:</td><td id="army"></td></tr>
-            <tr><td>Популярность:</td><td id="popularity"></td></tr>
-            <tr><td>Замок:</td><td id="castle"></td></tr>
-            <tr><td>Титул:</td><td id="rank"></td></tr>
-        </table>
-    </div>
-
-    <!-- ===== МИНИ-КАРТА ПОСЕЛЕНИЯ ===== -->
-    <div id="miniMap" class="panel">
-        <h3>Карта поселения</h3>
-        <div id="mapGrid"></div>
+      <h3>Статистика</h3>
+      <table class="stats-table">
+        <tr><td>Жители:</td><td id="pop"></td></tr>
+        <tr><td>Еда:</td><td id="food"></td></tr>
+        <tr><td>Золото:</td><td id="gold"></td></tr>
+        <tr><td>Железо:</td><td id="iron"></td></tr>
+        <tr><td>Оружие:</td><td id="weapons"></td></tr>
+        <tr><td>Солдаты:</td><td id="army"></td></tr>
+        <tr><td>Популярность:</td><td id="popularity"></td></tr>
+        <tr><td>Замок:</td><td id="castle"></td></tr>
+        <tr><td>Титул:</td><td id="rank"></td></tr>
+      </table>
     </div>
 
     <!-- ===== СТРОИТЕЛЬСТВО ===== -->
     <div class="panel">
-        <h3>Строительство</h3>
-        <button onclick="build('farm')">Построить ферму (+500 еды) — 100 золота</button>
-        <button onclick="build('mine')">Построить шахту (+10 железа) — 200 золота</button>
-        <button onclick="build('market')">Построить рынок — 300 золота</button>
-        <button onclick="build('forge')">Построить кузницу — 150 золота</button>
-        <button onclick="upgradeCastle()">Строить замок</button>
+      <h3>Строительство</h3>
+      <button onclick="build('farm')">Построить ферму (+500 еды) — 100 золота</button>
+      <button onclick="build('mine')">Построить шахту (+10 железа) — 200 золота</button>
+      <button onclick="build('market')">Построить рынок — 300 золота</button>
+      <button onclick="build('forge')">Построить кузницу — 150 золота</button>
+      <button onclick="upgradeCastle()">Улучшить замок</button>
     </div>
 
     <!-- ===== АРМИЯ ===== -->
     <div class="panel">
-        <h3>Армия</h3>
-        <button onclick="craftWeapon()">Ковать оружие</button>
-        <button onclick="hireSoldier()">Нанять солдата</button>
+      <h3>Армия</h3>
+      <button onclick="craftWeapon()">Ковать оружие (1 железо → 1 оружие)</button>
+      <button onclick="hireSoldier()">Нанять солдата (50 золота + 1 оружие)</button>
     </div>
 
-    <!-- ===== НАЛОГИ И ЕДА ===== -->
+    <!-- ===== НАЛОГИ И ПИЩА ===== -->
     <div class="panel">
-        <h3>Налоги и пища</h3>
-        <label>
-            Налоги (%):
-            <input id="taxRate" type="number" min="0" max="100" value="30">
-        </label>
-        <br><br>
-        <label>
-            Еда на человека:
-            <input id="foodRate" type="number" min="0" max="10" value="3">
-        </label>
-    </div>
-
-    <!-- ===== ТОРГОВЛЯ ===== -->
-    <div class="panel">
-        <h3>Торговля</h3>
-        <button onclick="sellFood()">Продать еду</button>
-        <button onclick="buyFood()">Купить еду</button>
-        <button onclick="sellIron()">Продать железо</button>
-        <button onclick="buyIron()">Купить железо</button>
-        <button onclick="sellWeapons()">Продать оружие</button>
-        <button onclick="buyWeapons()">Купить оружие</button>
+      <h3>Налоги и пища</h3>
+      <div class="field-row">
+        <label for="taxRate">Ставка налога (% с населения):</label>
+        <input id="taxRate" type="number" min="0" max="50" step="1">
+      </div>
+      <div class="field-row">
+        <label for="foodRate">Рацион (ед. еды на 1 жителя):</label>
+        <input id="foodRate" type="number" min="0.5" max="3" step="0.1">
+      </div>
+      <p class="hint">
+        Низкие налоги повышают популярность, высокие — снижают.
+        Щедрый рацион радует народ, но быстрее расходует запасы еды.
+      </p>
     </div>
 
     <!-- ===== СОВЕТНИК ===== -->
-    <div class="panel">
-        <h3>Советник</h3>
-        <pre id="advisor"></pre>
+    <div class="panel panel-wide">
+      <h3>Советник</h3>
+      <div id="advisor" class="advisor-text">
+        Добро пожаловать, правитель. Постройте фермы и шахты, чтобы ваша Империя росла.
+      </div>
     </div>
 
-</div>
+    <!-- ===== ХОД ===== -->
+    <div class="panel panel-wide">
+      <h3>Ход Империи</h3>
+      <p class="hint">
+        Нажмите «Следующий год», чтобы применить налоги, расход еды, прирост населения и содержание армии.
+      </p>
+      <button class="primary" onclick="endTurn()">Следующий год</button>
+      <button class="secondary" onclick="resetGame()">Сбросить игру</button>
+    </div>
+  </div>
 
-<!-- ===== КНОПКА ЗАВЕРШЕНИЯ ГОДА ===== -->
-<div style="text-align:center; margin:20px;">
-    <button style="max-width:300px;" onclick="endTurn()">Следующий год</button>
-</div>
-
-<!-- ===== ОТЧЕТ ЗА ГОД (ПОПАП) ===== -->
-<div id="reportPanel" class="hidden">
+  <!-- ===== ОКНО ОТЧЁТА ===== -->
+  <div id="reportPanel" class="hidden">
     <div id="reportBox">
-        <h3>Отчёт за год</h3>
-        <pre id="reportText"></pre>
-        <button onclick="closeReport()">Закрыть</button>
+      <h3>Отчёт за год</h3>
+      <pre id="reportText"></pre>
+      <button onclick="closeReport()">Закрыть</button>
     </div>
-</div>
+  </div>
 
-<script src="game.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
-
-
-
