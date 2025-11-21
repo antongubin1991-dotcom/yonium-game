@@ -36,7 +36,11 @@ function createInitialGameState() {
     forges: 0,
 
     taxRate: 10,   // % с населения
-    foodRate: 1.0  // ед. еды на 1 жителя
+    foodRate: 1.0, // ед. еды на 1 жителя
+
+    // --- НОВОЕ ---
+    priceIndex: 1.0,    // уровень цен (1.0 = базовый)
+    inflationRate: 0    // инфляция за последний год, в %
   };
 }
 
@@ -631,5 +635,6 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
 
