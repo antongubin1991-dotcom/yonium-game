@@ -105,6 +105,17 @@ function getNextRankInfo() {
     needCastle: Math.max(0, next.minCastle - game.castleLevel)
   };
 }
+function updateCastleImage() {
+  const img = document.getElementById("castleImage");
+  if (!img) return;
+
+  // индекс картинки = уровень замка, но не больше последнего элемента массива
+  let idx = game.castleLevel;
+  if (idx < 0) idx = 0;
+  if (idx >= CASTLE_IMAGES.length) idx = CASTLE_IMAGES.length - 1;
+
+  img.src = CASTLE_IMAGES[idx];
+}
 // ======================================================
 //                ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 // ======================================================
@@ -266,6 +277,7 @@ function updateUI() {
   updateAdvisor();
   updatePricesUI();
   updateTradeButtons();
+  updateCastleImage();
 }
 // ======================================================
 //                  ОКНО ОТЧЁТА
@@ -853,6 +865,7 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
 
 
