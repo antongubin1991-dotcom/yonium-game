@@ -342,10 +342,9 @@ function upgradeCastle() {
   const cost = Math.round(500 * nextLevel * (game.priceIndex || 1)); // было: 500 * nextLevel
 
   if (game.gold < cost) {
-    return alert("Недостаточно золота. Нужно " + cost + " золота для улучшения замка.");
+    alert("Недостаточно золота. Нужно " + cost + " золота для улучшения замка.");
+    return;
   }
-  ...
-}
 
   game.gold -= cost;
   game.castleLevel = nextLevel;
@@ -681,6 +680,7 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
 
 
