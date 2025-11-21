@@ -34,19 +34,29 @@
     <!-- ===== СТРОИТЕЛЬСТВО ===== -->
     <div class="panel">
       <h3>Строительство</h3>
-      <button onclick="build('farm')">Построить ферму (+500 еды) — 100 золота</button>
-      <button onclick="build('mine')">Построить шахту (+10 железа) — 200 золота</button>
-      <button onclick="build('market')">Построить рынок — 300 золота</button>
-      <button onclick="build('forge')">Построить кузницу — 150 золота</button>
-      <button onclick="upgradeCastle()">Улучшить замок</button>
+      <button id="btnBuildFarm"   onclick="build('farm')"></button>
+      <button id="btnBuildMine"   onclick="build('mine')"></button>
+      <button id="btnBuildMarket" onclick="build('market')"></button>
+      <button id="btnBuildForge"  onclick="build('forge')"></button>
+      <button id="btnUpgradeCastle" onclick="upgradeCastle()"></button>
     </div>
-
+    
     <!-- ===== АРМИЯ ===== -->
     <div class="panel">
       <h3>Армия</h3>
       <button onclick="craftWeapon()">Ковать оружие (1 железо → 1 оружие)</button>
-      <button onclick="hireSoldier()">Нанять солдата (50 золота + 1 оружие)</button>
+      <button id="btnHireSoldier" onclick="hireSoldier()"></button>
+      
     </div>
+    <div class="card">
+  <h2>Торговля</h2>
+  <button id="btnBuyFood"  onclick="buyFood()"></button>
+  <button id="btnSellFood" onclick="sellFood()"></button>
+  <button id="btnBuyIron"  onclick="buyIron()"></button>
+  <button id="btnSellIron" onclick="sellIron()"></button>
+  <p class="hint">Курс зависит от количества рынков и инфляции.</p>
+</div>
+
 
     <!-- ===== НАЛОГИ И ПИЩА ===== -->
     <div class="panel">
@@ -96,3 +106,4 @@
   <script src="game.js"></script>
 </body>
 </html>
+
