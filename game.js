@@ -87,7 +87,20 @@ function updateRank() {
   }
   game.rankName = best.name;
 }
+function getNextRankInfo() {
+  // Убедимся, что текущее звание актуально
+  updateRank();
+  const currentIndex = RANKS.findIndex((r) => r.name === game.rankName);
+  const next = RANKS[currentIndex + 1];
+  if (!next) return null;
 
+  return {
+    name: next.name,
+    needPop: Math.max(0, next.minPopulation - game.population),
+    needPopularity: Math.max(0, next.minPopularity - game.popularity),
+    needCastle: Math.max(0, next.minCastle - game.castleLevel)
+  };
+}
 // ======================================================
 //                ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 // ======================================================
@@ -239,41 +252,58 @@ function closeReport() {
   if (!panel) return;
   panel.classList.add("hidden");
 }
+// ======================================================
+//          ДИНАМИЧЕСКАЯ СТОИМОСТЬ ЗДАНИЙ
+// ======================================================
 
+function getBuildingCost(type) {
+  switch (type) {
+    case "farm":
+      // Базово 100, дальше дорожает на 50 за каждую уже построенную ферму
+      return 100 + game.farms * 50;
+    case "mine":
+      // Базово 200, плюс 75 за каждую шахту
+      return 200 + game.mines * 75;
+    case "market":
+      // Базово 300, плюс 100 за каждый рынок
+      return 300 + game.markets * 100;
+    case "forge":
+      // Базово 150, плюс 60 за каждую кузницу
+      return 150 + game.forges * 60;
+    default:
+      return Infinity;
+  }
+}
 // ======================================================
 //                     ДЕЙСТВИЯ
 // ======================================================
 
 function build(type) {
-  let cost = 0;
   let label = "";
+  const cost = getBuildingCost(type);
 
   switch (type) {
     case "farm":
-      cost = 100;
       label = "ферму";
-      if (game.gold < cost) return alert("Недостаточно золота для постройки фермы.");
+      if (game.gold < cost) return alert("Недостаточно золота для постройки фермы. Нужно " + cost + ".");
       game.gold -= cost;
       game.farms += 1;
       break;
     case "mine":
-      cost = 200;
       label = "шахту";
-      if (game.gold < cost) return alert("Недостаточно золота для постройки шахты.");
+      if (game.gold < cost) return alert("Недостаточно золота для постройки шахты. Нужно " + cost + ".");
       game.gold -= cost;
       game.mines += 1;
       break;
     case "market":
-      cost = 300;
       label = "рынок";
-      if (game.gold < cost) return alert("Недостаточно золота для постройки рынка.");
+      if (game.gold < cost) return alert("Недостаточно золота для постройки рынка. Нужно " + cost + ".");
       game.gold -= cost;
       game.markets += 1;
       break;
     case "forge":
-      cost = 150;
       label = "кузницу";
-      if (game.gold < cost) return alert("Недостаточно золота для постройки кузницы.");
+      if (game.gold < cost) return alert("Недостаточно золота для постройки кузницы. Нужно " + cost + ".");
       game.gold -= cost;
       game.forges += 1;
       break;
@@ -284,7 +314,7 @@ function build(type) {
   game.popularity = clamp(game.popularity + 1, 0, 100);
   saveGame();
   updateUI();
-  console.log("Построено: " + label);
+  console.log("Построено: " + label + " (стоимость: " + cost + ")");
 }
 
 function upgradeCastle() {
@@ -332,7 +362,61 @@ function hireSoldier() {
   saveGame();
   updateUI();
 }
+// ======================================================
+//                 СЛУЧАЙНЫЕ СОБЫТИЯ ГОДА
+// ======================================================
 
+function applyRandomEvents(report) {
+  const roll = Math.random();
+
+  // 1) Чума — редкое, но неприятное событие
+  if (roll < 0.04 && game.population > 500) {
+    const victims = Math.round(game.population * 0.05);
+    game.population -= victims;
+    game.popularity = clamp(game.popularity - 5, 0, 100);
+    report.push("Чума прошлась по землям! Умерло " + fmt(victims) + " жителей.");
+    return;
+  }
+
+  // 2) Неурожай / урожай (если есть фермы)
+  if (game.farms > 0 && roll < 0.10) {
+    if (Math.random() < 0.5) {
+      // неурожай
+      const loss = Math.round(game.farms * 200);
+      game.food = Math.max(0, game.food - loss);
+      game.popularity = clamp(game.popularity - 3, 0, 100);
+      report.push("Неурожайный год: часть запасов испортилась (" + fmt(loss) + " еды).");
+    } else {
+      // хороший урожай
+      const bonus = Math.round(game.farms * 300);
+      game.food += bonus;
+      game.popularity = clamp(game.popularity + 2, 0, 100);
+      report.push("Выдался особенно урожайный год! Дополнительно собрано " + fmt(bonus) + " еды.");
+    }
+    return;
+  }
+
+  // 3) Разбойники, если нет армии
+  if (roll < 0.12 && game.army === 0 && game.gold > 100) {
+    const stolen = Math.round(game.gold * 0.3);
+    game.gold -= stolen;
+    game.popularity = clamp(game.popularity - 4, 0, 100);
+    report.push("Разбойники разграбили казну! Потеряно " + fmt(stolen) + " золота. Народ задаётся вопросом, зачем им такой правитель.");
+    return;
+  }
+
+  // 4) Удачный набег армии, если она есть
+  if (roll < 0.12 && game.army > 0) {
+    const loot = 100 + Math.round(game.army * 3);
+    game.gold += loot;
+    game.popularity = clamp(game.popularity - 1, 0, 100); // за набеги тебя не очень любят
+    report.push("Армия совершила удачный набег на соседей и принесла " + fmt(loot) + " золота. Соседи — не в восторге, но это уже их проблема.");
+    return;
+  }
+
+  // 5) Ничего особенного
+  // Можно добавить мелкие flavor-события текста без механики, если захочешь
+}
 // ======================================================
 //                    ХОД ИГРЫ
 // ======================================================
@@ -404,9 +488,33 @@ function endTurn() {
     report.push("Не хватило еды! Умерло от голода: " + fmt(hungerDeaths) + " жителей");
   }
 
-  // Прирост населения
-  const births = Math.round(startPop * 0.02);
-  game.population += births;
+    // Прирост населения (рождённые)
+  // База ~1.5% от текущего населения, модифицируется популярностью
+  const birthsBase = Math.round(game.population * 0.015);
+  const popularityMod = (game.popularity - 50) / 100; // от -0.5 до +0.5
+  const births = Math.max(0, Math.round(birthsBase * (1 + popularityMod)));
+  if (births > 0) {
+    game.population += births;
+    report.push("Родилось детей: +" + fmt(births));
+  }
+
+  // Миграция
+  let immigrants = 0;
+  let emigrants = 0;
+
+  // Высокая популярность + низкие налоги + нет голода => к нам едут
+  if (game.popularity >= 70 && game.taxRate <= 10 && hungerDeaths === 0) {
+    immigrants = Math.round(game.population * 0.01);
+    game.population += immigrants;
+    report.push("В империю прибыли переселенцы: +" + fmt(immigrants) + " человек.");
+  }
+  // Низкая популярность или очень высокие налоги => от нас уезжают
+  else if (game.popularity <= 25 || game.taxRate >= 25) {
+    emigrants = Math.round(game.population * 0.008);
+    emigrants = Math.min(emigrants, game.population);
+    game.population -= emigrants;
+    report.push("Часть населения эмигрировала из-за недовольства: -" + fmt(emigrants) + " человек.");
+  }
 
   // Популярность
   if (hungerDeaths > 0) {
@@ -424,7 +532,8 @@ function endTurn() {
   if (deserters > 0) {
     game.popularity -= 4;
   }
-
+  // Случайные события года (чума, набеги, урожай и т.п.)
+  applyRandomEvents(report);
   // Бонус за развитие замка
   game.popularity += game.castleLevel;
   game.popularity = clamp(game.popularity, 0, 100);
@@ -469,7 +578,24 @@ function endTurn() {
   if (ending) {
     report.push(ending);
   }
+  // Обновляем звание и пишем в отчёт прогресс
+  const oldRank = game.rankName;
+  updateRank();
 
+  if (game.rankName !== oldRank) {
+    report.push("");
+    report.push("Новое звание: " + game.rankName + "!");
+  } else {
+    const next = getNextRankInfo();
+    if (next) {
+      let needParts = [];
+      if (next.needPop > 0) needParts.push("население +" + fmt(next.needPop));
+      if (next.needPopularity > 0) needParts.push("популярность +" + next.needPopularity);
+      if (next.needCastle > 0) needParts.push("уровень замка +" + next.needCastle);
+      report.push("");
+      report.push('До звания "' + next.name + '" не хватает: ' + needParts.join(", ") + ".");
+    }
+  }
   saveGame();
   updateUI();
   showReport(report.join("\n"));
@@ -505,4 +631,5 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
