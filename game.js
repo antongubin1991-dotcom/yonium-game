@@ -245,8 +245,9 @@ function updateUI() {
   writeRatesToInputs();
   updateStatsUI();
   updateAdvisor();
+  updatePricesUI();
+  updateTradeButtons();
 }
-
 // ======================================================
 //                  ОКНО ОТЧЁТА
 // ======================================================
@@ -293,6 +294,82 @@ function getBuildingCost(type) {
 
   // умножаем на уровень цен
   return Math.round(base * pi);
+}
+// ======================================================
+//             ОБНОВЛЕНИЕ ЦЕН НА КНОПКАХ
+// ======================================================
+
+function updatePricesUI() {
+  // Кнопки строительства
+  const btnFarm   = document.getElementById("btnBuildFarm");
+  const btnMine   = document.getElementById("btnBuildMine");
+  const btnMarket = document.getElementById("btnBuildMarket");
+  const btnForge  = document.getElementById("btnBuildForge");
+  const btnCastle = document.getElementById("btnUpgradeCastle");
+
+  if (btnFarm) {
+    btnFarm.textContent =
+      "Построить ферму (+500 еды) — " + fmt(getBuildingCost("farm")) + " золота";
+  }
+  if (btnMine) {
+    btnMine.textContent =
+      "Построить шахту (+10 железа) — " + fmt(getBuildingCost("mine")) + " золота";
+  }
+  if (btnMarket) {
+    btnMarket.textContent =
+      "Построить рынок — " + fmt(getBuildingCost("market")) + " золота";
+  }
+  if (btnForge) {
+    btnForge.textContent =
+      "Построить кузницу — " + fmt(getBuildingCost("forge")) + " золота";
+  }
+  if (btnCastle) {
+    const nextLevel = game.castleLevel + 1;
+    const cost = Math.round(500 * nextLevel * (game.priceIndex || 1));
+    btnCastle.textContent =
+      "Улучшить замок до уровня " + nextLevel + " — " + fmt(cost) + " золота";
+  }
+
+  // Кнопка найма солдата
+  const btnHire = document.getElementById("btnHireSoldier");
+  if (btnHire) {
+    const soldierCost = Math.round(50 * (game.priceIndex || 1));
+    btnHire.textContent =
+      "Нанять солдата (" + fmt(soldierCost) + " золота + 1 оружие)";
+  }
+}
+// ======================================================
+//                 КУРСЫ ТОРГОВЛИ
+// ======================================================
+
+function getFoodTradePack() {
+  const pi = game.priceIndex || 1;
+
+  const packSize = 100;      // ед. еды за сделку
+  const baseBuy  = 20;       // базовая цена покупки (золота за 100 еды)
+  const baseSell = 10;       // базовая цена продажи
+
+  const marketBonus = Math.min(game.markets * 0.03, 0.25); // до 25% влияния рынков
+
+  const buyCost  = Math.max(1, Math.round(baseBuy  * pi * (1 - marketBonus)));
+  const sellGain = Math.max(1, Math.round(baseSell * pi * (1 + marketBonus)));
+
+  return { packSize, buyCost, sellGain };
+}
+
+function getIronTradePack() {
+  const pi = game.priceIndex || 1;
+
+  const packSize = 10;       // ед. железа за сделку
+  const baseBuy  = 80;       // базовая цена покупки (золота за 10 железа)
+  const baseSell = 50;       // базовая цена продажи
+
+  const marketBonus = Math.min(game.markets * 0.03, 0.25);
+
+  const buyCost  = Math.max(1, Math.round(baseBuy  * pi * (1 - marketBonus)));
+  const sellGain = Math.max(1, Math.round(baseSell * pi * (1 + marketBonus)));
+
+  return { packSize, buyCost, sellGain };
 }
 // ======================================================
 //                     ДЕЙСТВИЯ
@@ -387,6 +464,57 @@ function hireSoldier() {
   updateUI();
 }
 // ======================================================
+//                     ТОРГОВЛЯ
+// ======================================================
+
+function buyFood() {
+  const { packSize, buyCost } = getFoodTradePack();
+  if (game.gold < buyCost) {
+    alert("Недостаточно золота. Нужно " + fmt(buyCost) + " золота.");
+    return;
+  }
+  game.gold -= buyCost;
+  game.food += packSize;
+  saveGame();
+  updateUI();
+}
+
+function sellFood() {
+  const { packSize, sellGain } = getFoodTradePack();
+  if (game.food < packSize) {
+    alert("Недостаточно еды. Нужен запас хотя бы " + fmt(packSize) + " еды.");
+    return;
+  }
+  game.food -= packSize;
+  game.gold += sellGain;
+  saveGame();
+  updateUI();
+}
+
+function buyIron() {
+  const { packSize, buyCost } = getIronTradePack();
+  if (game.gold < buyCost) {
+    alert("Недостаточно золота. Нужно " + fmt(buyCost) + " золота.");
+    return;
+  }
+  game.gold -= buyCost;
+  game.iron += packSize;
+  saveGame();
+  updateUI();
+}
+
+function sellIron() {
+  const { packSize, sellGain } = getIronTradePack();
+  if (game.iron < packSize) {
+    alert("Недостаточно железа. Нужен запас хотя бы " + fmt(packSize) + " железа.");
+    return;
+  }
+  game.iron -= packSize;
+  game.gold += sellGain;
+  saveGame();
+  updateUI();
+}
+// ======================================================
 //                 СЛУЧАЙНЫЕ СОБЫТИЯ ГОДА
 // ======================================================
 
@@ -440,6 +568,32 @@ function applyRandomEvents(report) {
 
   // 5) Ничего особенного
   // Можно добавить мелкие flavor-события текста без механики, если захочешь
+}
+function updateTradeButtons() {
+  const foodPack = getFoodTradePack();
+  const ironPack = getIronTradePack();
+
+  const btnBuyFood  = document.getElementById("btnBuyFood");
+  const btnSellFood = document.getElementById("btnSellFood");
+  const btnBuyIron  = document.getElementById("btnBuyIron");
+  const btnSellIron = document.getElementById("btnSellIron");
+
+  if (btnBuyFood) {
+    btnBuyFood.textContent =
+      "Купить " + fmt(foodPack.packSize) + " еды — " + fmt(foodPack.buyCost) + " золота";
+  }
+  if (btnSellFood) {
+    btnSellFood.textContent =
+      "Продать " + fmt(foodPack.packSize) + " еды — " + fmt(foodPack.sellGain) + " золота";
+  }
+  if (btnBuyIron) {
+    btnBuyIron.textContent =
+      "Купить " + fmt(ironPack.packSize) + " железа — " + fmt(ironPack.buyCost) + " золота";
+  }
+  if (btnSellIron) {
+    btnSellIron.textContent =
+      "Продать " + fmt(ironPack.packSize) + " железа — " + fmt(ironPack.sellGain) + " золота";
+  }
 }
 // ======================================================
 //                    ХОД ИГРЫ
@@ -680,6 +834,7 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
 
 
