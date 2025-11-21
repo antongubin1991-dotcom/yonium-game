@@ -12,7 +12,17 @@ const RANKS = [
   { name: "Король",      minPopulation: 5000, minPopularity: 75, minCastle: 4 },
   { name: "Владыка Тьмы",minPopulation: 8000, minPopularity: 85, minCastle: 5 }
 ];
-
+// Картинки замка по уровням
+const CASTLE_IMAGES = [
+  "img/castle_0.png", // уровень 0
+  "img/castle_1.png", // уровень 1
+  "img/castle_2.png", // уровень 2
+  "img/castle_3.png", // уровень 3
+  "img/castle_4.png", // уровень 4
+  "img/castle_5.png", // уровень 5
+  "img/castle_6.png", // уровень 6+
+  "img/castle_7.png"
+];
 let game = null;
 
 // Создание нового состояния
@@ -865,6 +875,7 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
 
 
