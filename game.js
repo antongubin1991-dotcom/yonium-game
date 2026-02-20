@@ -24,6 +24,20 @@ const CASTLE_IMAGES = [
   "img/castle_7.png"
 ];
 let game = null;
+const taxSlider = document.getElementById("taxRate");
+const foodSlider = document.getElementById("foodRate");
+const taxValue = document.getElementById("taxValue");
+const foodValue = document.getElementById("foodValue");
+
+taxSlider.addEventListener("input", () => {
+    game.taxRate = parseInt(taxSlider.value);
+    taxValue.innerText = game.taxRate;
+});
+
+foodSlider.addEventListener("input", () => {
+    game.foodRate = parseInt(foodSlider.value);
+    foodValue.innerText = game.foodRate;
+});
 
 // Создание нового состояния
 function createInitialGameState() {
@@ -875,6 +889,7 @@ function resetGame() {
     updateRank();
     updateUI();
 })();
+
 
 
 
