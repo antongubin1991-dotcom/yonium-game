@@ -1,19 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
-const taxSlider = document.getElementById("taxRate");
-const foodSlider = document.getElementById("foodRate");
-const taxValue = document.getElementById("taxValue");
-const foodValue = document.getElementById("foodValue");
-
-taxSlider.addEventListener("input", () => {
-    game.taxRate = parseInt(taxSlider.value);
-    taxValue.innerText = game.taxRate;
-});
-
-foodSlider.addEventListener("input", () => {
-    game.foodRate = parseInt(foodSlider.value);
-    foodValue.innerText = game.foodRate;
-});
-
 /* ============================================= */
 /*                ГЛОБАЛЬНЫЕ НАСТРОЙКИ           */
 /* ============================================= */
@@ -366,6 +351,7 @@ button.secondary {
 .hidden {
   display: none;
 }
+
 
 
 
