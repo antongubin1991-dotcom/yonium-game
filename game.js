@@ -20,15 +20,14 @@ const RANKS = [
 
 // Картинки замка по уровням (поставь свои пути)
 const CASTLE_IMAGES = [
-  "assets/castle/castle_0.png",
-  "assets/castle/castle_1.png",
-  "assets/castle/castle_2.png",
-  "assets/castle/castle_3.png",
-  "assets/castle/castle_4.png",
-  "assets/castle/castle_5.png",
-  "assets/castle/castle_6.png",
-  "assets/castle/castle_7.png",
-  "assets/castle/castle_8.png"
+  "img/castle_0.png", // уровень 0
+  "img/castle_1.png", // уровень 1
+  "img/castle_2.png", // уровень 2
+  "img/castle_3.png", // уровень 3
+  "img/castle_4.png", // уровень 4
+  "img/castle_5.png", // уровень 5
+  "img/castle_6.png", // уровень 6+
+  "img/castle_7.png"
 ];
 
 let game = null;
@@ -1030,3 +1029,4 @@ window.sellIron = sellIron;
 window.endTurn = endTurn;
 window.closeReport = closeReport;
 window.resetGame = resetGame;
+
