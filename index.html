@@ -75,21 +75,27 @@
 
     <!-- ===== НАЛОГИ И ПИЩА ===== -->
     <div class="panel">
-      <h3>Налоги и пища</h3>
-      <div class="field-row">
-        <label for="taxRate">Ставка налога (% с населения):</label>
-        <input id="taxRate" type="number" min="0" max="50" step="1">
-      </div>
-      <div class="field-row">
-        <label for="foodRate">Рацион (ед. еды на 1 жителя):</label>
-        <input id="foodRate" type="number" min="0.5" max="3" step="0.1">
-      </div>
-      <p class="hint">
-        Низкие налоги повышают популярность, высокие — снижают.
-        Щедрый рацион радует народ, но быстрее расходует запасы еды.
-      </p>
+    <h3>Налоги и пища</h3>
+
+    <div class="sliderBlock">
+        <label>Ставка налога: 
+            <span id="taxValue">10</span>%
+        </label>
+        <input type="range" id="taxRate" min="0" max="100" value="10">
     </div>
 
+    <div class="sliderBlock">
+        <label>Рацион (еда на 1 жителя): 
+            <span id="foodValue">1</span>
+        </label>
+        <input type="range" id="foodRate" min="0" max="10" value="1">
+    </div>
+
+    <p class="sliderHint">
+        Низкие налоги повышают популярность.  
+        Щедрый рацион ускоряет рост населения.
+    </p>
+</div>
     <!-- ===== СОВЕТНИК ===== -->
     <div class="panel panel-wide">
       <h3>Советник</h3>
@@ -121,6 +127,7 @@
   <script src="game.js"></script>
 </body>
 </html>
+
 
 
 
